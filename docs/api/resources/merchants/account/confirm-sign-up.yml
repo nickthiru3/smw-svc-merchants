@@ -1,0 +1,57 @@
+post:
+  operationId: ConfirmSignUpMerchant
+  tags:
+    - sign-up
+  summary: Confirms a new merchant's sign-up
+  security: []
+
+  requestBody:
+    required: true
+    description: The merchant's sign-up details
+    content:
+      application/json:
+        schema:
+          type: object
+          description: Form data for signing up
+          required:
+            - clientId
+            - username
+            - confirmationCode
+          properties:
+            clientId:
+              type: string
+              description: Client ID of the user
+            username:
+              type: string
+              description: Username of the user
+            confirmationCode:
+              type: string
+              description: Confirmation code of the user
+
+  responses:
+    "200":
+      description: Account registered. Complete sign-up with OTP
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - message
+            properties:
+              message:
+                type: string
+                example: "Account registered. Complete sign-up with OTP"
+
+  x-amazon-apigateway-request-validator: body
+
+  x-amazon-apigateway-integration:
+    type: aws_proxy
+    httpMethod: POST
+    uri: arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${ConfirmSignUpMerchant}/invocations
+    # responses:
+    #   default:
+    #     statusCode: "200"
+    #     headers:
+    #       Content-Type: application/json
+    #     responseParameters:
+    #       method.response.header.Access-Control-Allow-Origin: "'*'"

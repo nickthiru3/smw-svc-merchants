@@ -1,0 +1,58 @@
+version: '3.8'
+
+services:
+  localstack:
+    container_name: super-deals-localstack
+    image: localstack/localstack:latest
+    ports:
+      - "4566:4566"            # LocalStack Gateway
+      - "4510-4559:4510-4559"  # External services port range
+    environment:
+      # LocalStack configuration
+      - DEBUG=${DEBUG:-0}
+      - LAMBDA_EXECUTOR=${LAMBDA_EXECUTOR:-local}
+      - DOCKER_HOST=unix:///var/run/docker.sock
+      - HOST_TMP_FOLDER=${TMPDIR:-/tmp/}localstack
+      
+      # AWS service configuration
+      - SERVICES=lambda,dynamodb,s3,apigateway,sns,sqs,cloudwatch,logs,iam,sts,cloudformation
+      
+      # Persistence (optional - keeps data between restarts)
+      - PERSISTENCE=${PERSISTENCE:-1}
+      - DATA_DIR=/tmp/localstack/data
+      
+      # LocalStack Pro features (set to 0 for Community Edition)
+      - LOCALSTACK_API_KEY=${LOCALSTACK_API_KEY:-}
+      
+      # AWS credentials (dummy values for LocalStack)
+      - AWS_DEFAULT_REGION=us-east-1
+      - AWS_ACCESS_KEY_ID=test
+      - AWS_SECRET_ACCESS_KEY=test
+      
+    volumes:
+      - "${TMPDIR:-/tmp}/localstack:/tmp/localstack"
+      - "/var/run/docker.sock:/var/run/docker.sock"
+      
+    networks:
+      - localstack-network
+
+  # Optional: LocalStack Web UI (Pro feature, but useful for debugging)
+  # Uncomment if you have LocalStack Pro or want to try the free trial
+  # localstack-ui:
+  #   container_name: super-deals-localstack-ui
+  #   image: localstack/localstack-ui:latest
+  #   ports:
+  #     - "8080:3000"
+  #   environment:
+  #     - LOCALSTACK_URL=http://localstack:4566
+  #   depends_on:
+  #     - localstack
+  #   networks:
+  #     - localstack-network
+
+networks:
+  localstack-network:
+    driver: bridge
+
+# Health check script to verify LocalStack is ready
+# Run: docker-compose -f docker-compose.localstack.yml exec localstack curl -s http://localhost:4566/health

@@ -1,0 +1,54 @@
+post:
+  operationId: Accounts_Merchants_SignUp
+  tags:
+    - accounts_merchants_sign_up
+  summary: Signs up a new merchant
+  security: []
+
+  requestBody:
+    required: true
+    description: The merchant's sign-up details
+    content:
+      application/json:
+        schema:
+          type: object
+          description: Form data for signing up
+          required:
+            - username
+            - password
+          properties:
+            username:
+              type: string
+              description: Username of the user
+            password:
+              type: string
+              description: Password of the user
+
+  responses:
+    "200":
+      description: Account registered. Complete sign-up with OTP
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - message
+            properties:
+              message:
+                type: string
+                example: "Account registered. Complete sign-up with OTP"
+
+  x-amazon-apigateway-request-validator: body
+
+  x-amazon-apigateway-integration:
+    type: aws_proxy
+    httpMethod: POST
+    # uri: arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${SignUpMerchant}/invocations
+    uri: arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:654654543926:function:BackendStackLambdaStackAc-SignUpConstructLambdaCon-UWBWUXMyKIlJ/invocations
+    # responses:
+    #   default:
+    #     statusCode: "200"
+    #     headers:
+    #       Content-Type: application/json
+    #     responseParameters:
+    #       method.response.header.Access-Control-Allow-Origin: "'*'"

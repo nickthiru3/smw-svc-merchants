@@ -1,0 +1,70 @@
+post:
+  operationId: SignInMerchant
+  tags:
+    - sign-in
+  summary: Merchant can sign in
+  security:
+    - basic: []
+
+  requestBody:
+    required: true
+    description: Merchant sign-in details
+    content:
+      application/json:
+        schema:
+          type: object
+          description: Form data for signing in
+          required:
+            - username
+            - password
+          properties:
+            username:
+              type: string
+              description: Username of the user
+            password:
+              type: string
+              description: Password of the user
+
+  responses:
+    "200":
+      description: ???
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - message
+              - accessToken
+              - refreshToken
+              - expiresIn
+              - merchantId
+            properties:
+              message:
+                type: string
+                example: "Account registered. Complete sign-up with OTP"
+              accessToken:
+                type: string
+                example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c"
+              refreshToken:
+                type: string
+                example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c"
+              expiresIn:
+                type: number
+                example: 3600
+              merchantId:
+                type: string
+                example: "1234567890"
+
+  x-amazon-apigateway-request-validator: body
+
+  x-amazon-apigateway-integration:
+    type: aws_proxy
+    httpMethod: POST
+    uri: arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${SignInMerchant}/invocations
+    # responses:
+    #   default:
+    #     statusCode: "200"
+    #     headers:
+    #       Content-Type: application/json
+    #     responseParameters:
+    #       method.response.header.Access-Control-Allow-Origin: "'*'"

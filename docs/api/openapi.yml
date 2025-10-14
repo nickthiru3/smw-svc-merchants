@@ -1,0 +1,80 @@
+openapi: "3.0.0"
+info:
+  title: SuperDeals
+  version: "1.0"
+
+tags:
+  - name: deals
+    description: Deals service
+  - name: merchants
+    description: Merchants service
+
+components:
+  schemas:
+    $ref: "./schemas/_index.yml"
+
+  # parameters:
+  #   $ref: "./parameters/_index.yml"
+
+  responses:
+    $ref: "./responses/_index.yml"
+
+  securitySchemes:
+    basic:
+      description: Basic authentication with username and password
+      type: http
+      scheme: basic
+    jwt:
+      description: JWT bearer token
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+security:
+  - basic: []
+  - jwt: []
+
+paths:
+  # Merchant account service
+  # /merchants/account/signup:
+  #   $ref: "./resources/merchants/account/sign-up.yml"
+
+  # /merchants/account/sign-in:
+  # $ref: "./resources/merchants/account/sign-in.yml"
+
+  # /merchants/account/confirm-sign-up:
+  # $ref: "./resources/merchants/account/confirm-sign-up.yml"
+
+  # Merchant deals service
+  # /merchants/deals:
+  # $ref: "./resources/merchants/deals/create-deal.yml"
+
+  # Accounts service
+  /accounts/merchants:
+    $ref: "./resources/accounts/merchants/sign-up.yml"
+
+x-amazon-apigateway-request-validators:
+  all:
+    validateRequestBody: true
+    validateRequestParameters: true
+  params:
+    validateRequestParameters: true
+    validateRequestBody: false
+  body:
+    validateRequestBody: true
+    validateRequestParameters: false
+  none:
+    validateRequestBody: false
+    validateRequestParameters: false
+
+x-amazon-apigateway-request-validator: all
+
+x-amazon-apigateway-cors:
+  allowOrigin: "*"
+  allowHeaders:
+    - Content-Type
+  allowMethods:
+    - "*"
+
+x-amazon-apigateway-binary-media-types:
+  - image/jpeg

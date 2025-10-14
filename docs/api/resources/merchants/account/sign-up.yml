@@ -1,0 +1,161 @@
+post:
+  operationId: SignUpMerchant
+  tags:
+    - merchants
+  summary: Signs up a new merchant
+  security: []
+
+  requestBody:
+    required: true
+    description: The merchant's sign-up details
+    content:
+      application/json:
+        schema:
+          type: object
+          description: Form data for merchant sign-up
+          required:
+            - email
+            - password
+            - businessName
+            - registrationNumber
+            - yearOfRegistration
+            - address
+            - phone
+            - primaryContact
+            - productCategories
+          properties:
+            email:
+              type: string
+              format: email
+              description: Email address of the merchant
+            password:
+              type: string
+              description: Password for the account (min 8 characters)
+            businessName:
+              type: string
+              description: Name of the business
+            registrationNumber:
+              type: string
+              description: Business registration number
+            yearOfRegistration:
+              type: integer
+              minimum: 1900
+              maximum: 2025
+              description: Year of business registration
+            website:
+              type: string
+              format: uri
+              description: Website URL (optional)
+            address:
+              type: object
+              required:
+                - buildingNumber
+                - street
+                - city
+                - state
+                - zip
+                - country
+              properties:
+                buildingNumber:
+                  type: string
+                  description: Building number
+                street:
+                  type: string
+                  description: Street
+                city:
+                  type: string
+                  description: City
+                state:
+                  type: string
+                  description: State
+                zip:
+                  type: string
+                  description: Zip
+                country:
+                  type: string
+                  description: Country
+            phone:
+              type: string
+              description: Business phone number
+            primaryContact:
+              type: object
+              required:
+                - name
+                - email
+                - phone
+              properties:
+                name:
+                  type: string
+                  description: Contact person name
+                email:
+                  type: string
+                  format: email
+                  description: Contact person email
+                phone:
+                  type: string
+                  description: Contact person phone
+            productCategories:
+              type: array
+              minItems: 1
+              items:
+                type: string
+                enum:
+                  - Electronics
+                  - Clothing
+                  - Home & Kitchen
+                  - Beauty & Personal Care
+                  - Books
+                  - Toys & Games
+                  - Sports & Outdoors
+                  - Automotive
+                  - Health & Wellness
+                  - Food & Grocery
+                  - Jewelry
+                  - Office Supplies
+              description: List of product categories
+
+  responses:
+    "200":
+      description: Account registered successfully
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - success
+              - message
+              - username
+            properties:
+              success:
+                type: boolean
+                example: true
+              message:
+                type: string
+                example: "Account registered. Complete sign-up with OTP"
+              username:
+                type: string
+                example: "merchant@example.com"
+    "400":
+      description: Bad request or validation error
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - success
+              - error
+            properties:
+              success:
+                type: boolean
+                example: false
+              error:
+                type: string
+                example: "Email already exists"
+
+  x-amazon-apigateway-request-validator: body
+
+  x-amazon-apigateway-integration:
+    type: aws_proxy
+    httpMethod: POST
+    uri: arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${MerchantSignUpLambda}/invocations
+    passthroughBehavior: when_no_match

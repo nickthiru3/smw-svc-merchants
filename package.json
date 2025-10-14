@@ -1,0 +1,95 @@
+{
+  "name": "super-deals-auth-ms",
+  "version": "0.1.0",
+  "bin": {
+    "microservice-app": "bin/app.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "watch": "tsc -w",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage",
+    "lint": "eslint 'src/**/*.ts' --fix",
+    "format": "prettier --write 'src/**/*.ts' 'test/**/*.ts'",
+    "prepare": "husky install",
+    "setup": "cp .env.example .env && echo 'Please update .env with your values'",
+    "dev": "ENV_NAME=local ts-node --transpile-only bin/app-stack.ts",
+    "deploy:local": "ENV_NAME=local cdklocal deploy --all --outputs-file outputs.json --require-approval never",
+    "diff:local": "ENV_NAME=local cdklocal diff --all",
+    "destroy:local": "ENV_NAME=local cdklocal destroy --all --force",
+    "bootstrap:pipeline": "ENV_NAME=staging npx cdk deploy --all --require-approval never",
+    "diff:staging": "ENV_NAME=staging npx cdk diff --all",
+    "diff:prod": "ENV_NAME=production npx cdk diff --all",
+    "localstack:setup": "./scripts/localstack-setup.sh",
+    "localstack:start": "docker-compose -f docker-compose.localstack.yml up -d",
+    "localstack:stop": "docker-compose -f docker-compose.localstack.yml down",
+    "localstack:restart": "npm run localstack:stop && npm run localstack:start",
+    "localstack:status": "docker-compose -f docker-compose.localstack.yml ps",
+    "localstack:logs": "docker-compose -f docker-compose.localstack.yml logs -f",
+    "localstack:health": "curl -s http://localhost:4566/health | jq",
+    "bootstrap:dev": "ENV_NAME=dev npx cdk bootstrap aws://$AWS_DEFAULT_ACCOUNT/$AWS_DEFAULT_REGION",
+    "diff:dev": "ENV_NAME=dev DEPLOY_MODE=direct npx cdk diff ServiceStack-dev",
+    "deploy:dev": "ENV_NAME=dev DEPLOY_MODE=direct npx cdk deploy ServiceStack-dev --require-approval never",
+    "destroy:dev": "ENV_NAME=dev DEPLOY_MODE=direct npx cdk destroy ServiceStack-dev --force"
+  },
+  "imports": {
+    "#config/*": [
+      "./config/*"
+    ],
+    "#src/*": [
+      "./src/*"
+    ],
+    "#lib/*": [
+      "./lib/*"
+    ],
+    "#test/*": [
+      "./test/*"
+    ],
+    "#package-lock": [
+      "./package-lock.json"
+    ]
+  },
+  "devDependencies": {
+    "@cloudcomponents/cdk-responsive-email-template": "^2.3.0",
+    "@super-deals/infra-contracts": "file:../infra-contracts",
+    "@types/aws-lambda": "^8.10.152",
+    "@types/jest": "^29.5.14",
+    "@types/node": "22.7.9",
+    "@typescript-eslint/parser": "^8.41.0",
+    "aws-cdk": "2.1023.0",
+    "eslint": "^9.34.0",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-jest": "^29.0.1",
+    "html-minifier": "^4.0.0",
+    "husky": "^9.1.7",
+    "jest": "^29.7.0",
+    "js-beautify": "^1.15.4",
+    "lint-staged": "^16.1.5",
+    "mjml": "^4.7.1",
+    "prettier": "^3.6.2",
+    "supertest": "^7.1.4",
+    "ts-jest": "^29.2.5",
+    "ts-node": "^10.9.2",
+    "tsconfig-paths": "^4.2.0",
+    "typescript": "~5.6.3",
+    "zod": "^4.1.5"
+  },
+  "dependencies": {
+    "@aws-sdk/client-cognito-identity-provider": "^3.879.0",
+    "@aws-sdk/client-dynamodb": "^3.879.0",
+    "@aws-sdk/client-ses": "^3.879.0",
+    "@aws-sdk/client-ssm": "^3.645.0",
+    "@aws-sdk/util-dynamodb": "^3.883.0",
+    "aws-cdk-lib": "2.206.0",
+    "aws-lambda": "^1.0.7",
+    "constructs": "^10.0.0",
+    "dotenv": "^17.2.1"
+  },
+  "lint-staged": {
+    "*.{ts,json}": [
+      "eslint --fix",
+      "prettier --write"
+    ]
+  }
+}

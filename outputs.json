@@ -1,0 +1,11 @@
+{
+  "dev-Users-ServiceStack": {
+    "ApiConstructStageConstructRestApiUrlUsersC4847E74": "https://nluk5ncpk2.execute-api.us-east-1.amazonaws.com/dev/",
+    "AuthConstructUserPoolStackUserPoolDomainName5238B0CD": "super-deals-dev",
+    "AuthConstructIdentityPoolStackIdentityPoolIdC4386B49": "us-east-1:65dcdb89-38df-48c4-8e5d-43be87da1866",
+    "AuthConstructUserPoolStackUserPoolId6BBC3FF3": "us-east-1_x9gCw9t1v",
+    "AuthConstructUserPoolStackUserPoolClientIdD6DC4A60": "2151dgtvvi5784l3k4qss3asvc",
+    "DatabaseConstructTableArn5DAA7654": "arn:aws:dynamodb:us-east-1:324093102745:table/dev-Users-ServiceStack-DatabaseConstructTable6CCCBD16-N0ZY3D77JCJU",
+    "DatabaseConstructTableName44DCC803": "dev-Users-ServiceStack-DatabaseConstructTable6CCCBD16-N0ZY3D77JCJU"
+  }
+}

@@ -1,0 +1,122 @@
+post:
+  operationId: CreateDeal
+  summary: Merchant can add a deal to his catalog
+  tags:
+    - deals
+  description: Merchant can add a deal to his catalog
+  security:
+    # []
+    - jwt: []
+
+  requestBody:
+    required: true
+    description: The deal to add
+    content:
+      application/json:
+        schema:
+          type: object
+          description: Form data for adding a deal to a merchant's catalog
+          required:
+            - merchantId
+            - title
+            - originalPrice
+            - discount
+            - logoUrl
+            - category
+            - expiration
+          properties:
+            merchantId:
+              type: string
+              description: ID of merchant who created the deal
+            title:
+              type: string
+              description: Title of the deal
+              maxLength: 255
+            originalPrice:
+              type: number
+              description: Original price of the deal
+              minimum: 0
+            discount:
+              type: number
+              description: Deal discount
+              minimum: 0
+              maximum: 100
+            logoUrl:
+              type: string
+              description: S3 Bucket URL for Logo image of the deal
+            category:
+              type: string
+              description: The category this deal falls under
+              enum:
+                - foodDrink
+                - bathroom
+                - jewelery
+                - sports
+                - tech
+                - auto
+                - entertainment
+                - travel
+            expiration:
+              type: string
+              format: date
+              description: >
+                The expiration date of the deal. Must be a valid date in YYYY-MM-DD format.
+                Must be at least seven days from today's date.
+
+  responses:
+    "200":
+      description: Successfully added the deal
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - message
+              - dealId
+            properties:
+              message:
+                type: string
+                example: "Deal successfully added"
+              dealId:
+                type: string
+                example: "1yn5w7gKp8d7L2M3v4e5T9a6B"
+
+  x-amazon-apigateway-request-validator: body
+
+  x-amazon-apigateway-integration:
+    type: aws_proxy
+    httpMethod: POST
+    uri: arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${CreateDeal}/invocations
+    # responses:
+    #   default:
+    #     statusCode: "200"
+    #     headers:
+    #       Content-Type: application/json
+    #     responseParameters:
+    #       method.response.header.Access-Control-Allow-Origin: "'*'"
+# options:
+#   responses:
+#     "200":
+#       description: Successful operation
+#       headers:
+#         Access-Control-Allow-Origin:
+#           schema:
+#             type: string
+#         Access-Control-Allow-Methods:
+#           schema:
+#             type: string
+#         Access-Control-Allow-Headers:
+#           schema:
+#             type: string
+#   x-amazon-apigateway-integration:
+#     responses:
+#       default:
+#         statusCode: "200"
+#         responseParameters:
+#           method.response.header.Access-Control-Allow-Methods: "*"
+#           method.response.header.Access-Control-Allow-Headers: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key'"
+#           method.response.header.Access-Control-Allow-Origin: "'*'"
+#     passthroughBehavior: when_no_match
+#     requestTemplates:
+#       application/json: '{"statusCode": 200}'
+#     type: mock

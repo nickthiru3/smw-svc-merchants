@@ -1,0 +1,961 @@
+
+> super-deals-auth-ms@0.1.0 test
+> jest --testPathIgnorePatterns=test/e2e
+
+PASS test/lib/api/endpoints/bindings/helpers.test.ts
+PASS test/src/helpers/ssm.test.ts
+PASS test/lib/api/endpoints/users/post/payload.schema.test.ts
+PASS test/src/helpers/email.test.ts
+  ● Console
+
+    console.log
+      Error Response: {
+        "statusCode": 404,
+        "headers": {
+          "Access-Control-Allow-Headers": "Content-Type",
+          "Access-Control-Allow-Origin": "*",
+          "Access-Control-Allow-Methods": "*",
+          "Content-Type": "application/json"
+        },
+        "body": "{\"error\":\"Template not found\",\"details\":\"NonExistentTemplate\"}"
+      }
+
+      at log (src/helpers/api.ts:126:11)
+
+PASS test/lib/api/endpoints/users/post/handler.test.ts
+  ● Console
+
+    console.log
+      Received event: {
+        "body": "{\"userType\":\"merchant\",\"email\":\"test@example.com\",\"password\":\"Test123!@#\",\"businessName\":\"Test Business\",\"registrationNumber\":\"REG123456\",\"yearOfRegistration\":2020,\"website\":\"https://example.com\",\"address\":{\"buildingNumber\":\"123\",\"street\":\"Main St\",\"city\":\"TestCity\",\"state\":\"TS\",\"zip\":\"12345\",\"country\":\"TestCountry\"},\"phone\":\"+1234567890\",\"primaryContact\":{\"name\":\"John Doe\",\"email\":\"john@example.com\",\"phone\":\"+1234567890\"},\"productCategories\":[\"Electronics\"]}",
+        "headers": {},
+        "multiValueHeaders": {},
+        "httpMethod": "POST",
+        "isBase64Encoded": false,
+        "path": "/users",
+        "pathParameters": null,
+        "queryStringParameters": null,
+        "multiValueQueryStringParameters": null,
+        "stageVariables": null,
+        "resource": "/users",
+        "requestContext": {}
+      }
+
+      at log (lib/api/endpoints/users/post/helpers.ts:488:11)
+
+    console.log
+      Signing up user with Cognito: {
+        email: 'test@example.com',
+        userPoolClientId: 'test-client-id',
+        attributesCount: 2
+      }
+
+      at log (lib/api/endpoints/users/post/helpers.ts:302:11)
+
+    console.log
+      Cognito sign-up response: {
+        "UserSub": "test-user-123",
+        "UserConfirmed": false,
+        "CodeDeliveryDetails": {
+          "Destination": "t***@example.com",
+          "DeliveryMedium": "EMAIL",
+          "AttributeName": "email"
+        }
+      }
+
+      at log (lib/api/endpoints/users/post/helpers.ts:318:13)
+
+    console.log
+      Adding user test@example.com to group merchant
+
+      at log (lib/api/endpoints/users/post/helpers.ts:350:11)
+
+    console.log
+      User test@example.com successfully added to group merchant
+
+      at log (lib/api/endpoints/users/post/helpers.ts:360:11)
+
+    console.log
+      Saving user profile to DynamoDB: {
+        userId: 'test-user-123',
+        userType: 'merchant',
+        tableName: 'UsersTable'
+      }
+
+      at log (lib/api/endpoints/users/post/helpers.ts:377:11)
+
+    console.log
+      Success Response: {
+        "statusCode": 201,
+        "headers": {
+          "Access-Control-Allow-Headers": "Content-Type",
+          "Access-Control-Allow-Origin": "*",
+          "Access-Control-Allow-Methods": "*",
+          "Content-Type": "application/json"
+        },
+        "body": "{\"message\":\"Merchant registered. Needs to submit OTP to complete sign-up\",\"userConfirmed\":false,\"userType\":\"merchant\",\"userId\":\"test-user-123\",\"codeDeliveryDetails\":{\"Destination\":\"t***@example.com\",\"DeliveryMedium\":\"EMAIL\",\"AttributeName\":\"email\"},\"merchantId\":\"test-user-123\"}"
+      }
+
+      at log (lib/api/endpoints/users/post/helpers.ts:452:11)
+
+    console.log
+      Received event: {
+        "body": "{\"userType\":\"merchant\",\"email\":\"test@example.com\",\"password\":\"Test123!@#\",\"businessName\":\"Test Business\",\"registrationNumber\":\"REG123456\",\"yearOfRegistration\":2020,\"website\":\"https://example.com\",\"address\":{\"buildingNumber\":\"123\",\"street\":\"Main St\",\"city\":\"TestCity\",\"state\":\"TS\",\"zip\":\"12345\",\"country\":\"TestCountry\"},\"phone\":\"+1234567890\",\"primaryContact\":{\"name\":\"John Doe\",\"email\":\"john@example.com\",\"phone\":\"+1234567890\"},\"productCategories\":[\"Electronics\"]}",
+        "headers": {},
+        "multiValueHeaders": {},
+        "httpMethod": "POST",
+        "isBase64Encoded": false,
+        "path": "/users",
+        "pathParameters": null,
+        "queryStringParameters": null,
+        "multiValueQueryStringParameters": null,
+        "stageVariables": null,
+        "resource": "/users",
+        "requestContext": {}
+      }
+
+      at log (lib/api/endpoints/users/post/helpers.ts:488:11)
+
+    console.log
+      Signing up user with Cognito: {
+        email: 'test@example.com',
+        userPoolClientId: 'test-client-id',
+        attributesCount: 2
+      }
+
+      at log (lib/api/endpoints/users/post/helpers.ts:302:11)
+
+    console.error
+      Error in sign-up handler: Error: User already exists
+          at registerUserWithCognito (/home/nickt/projects/super-deals/users-ms/lib/api/endpoints/users/post/helpers.ts:326:27)
+          at processTicksAndRejections (node:internal/process/task_queues:105:5)
+          at stepSignUpInCognito (/home/nickt/projects/super-deals/users-ms/lib/api/endpoints/users/post/handler.ts:137:16)
+          at Object.runMerchantPipeline [as merchant] (/home/nickt/projects/super-deals/users-ms/lib/api/endpoints/users/post/handler.ts:197:11)
+          at handler (/home/nickt/projects/super-deals/users-ms/lib/api/endpoints/users/post/handler.ts:104:22)
+          at Object.<anonymous> (/home/nickt/projects/super-deals/users-ms/test/lib/api/endpoints/users/post/handler.test.ts:130:17) {
+        statusCode: 409,
+        details: { name: 'UsernameExistsException', message: 'User already exists' }
+      }
+
+      494 |  */
+      495 | export function logError(err: unknown): void {
+    > 496 |   console.error("Error in sign-up handler:", err);
+          |           ^
+      497 | }
+      498 |
+
+      at error (lib/api/endpoints/users/post/helpers.ts:496:11)
+      at handler (lib/api/endpoints/users/post/handler.ts:107:13)
+      at Object.<anonymous> (test/lib/api/endpoints/users/post/handler.test.ts:130:17)
+
+    console.log
+      Error: User already exists
+          at registerUserWithCognito (/home/nickt/projects/super-deals/users-ms/lib/api/endpoints/users/post/helpers.ts:326:27)
+          at processTicksAndRejections (node:internal/process/task_queues:105:5)
+          at stepSignUpInCognito (/home/nickt/projects/super-deals/users-ms/lib/api/endpoints/users/post/handler.ts:137:16)
+          at Object.runMerchantPipeline [as merchant] (/home/nickt/projects/super-deals/users-ms/lib/api/endpoints/users/post/handler.ts:197:11)
+          at handler (/home/nickt/projects/super-deals/users-ms/lib/api/endpoints/users/post/handler.ts:104:22)
+          at Object.<anonymous> (/home/nickt/projects/super-deals/users-ms/test/lib/api/endpoints/users/post/handler.test.ts:130:17) {
+        statusCode: 409,
+        details: { name: 'UsernameExistsException', message: 'User already exists' }
+      }
+
+      at log (lib/api/endpoints/users/post/helpers.ts:466:11)
+
+    console.log
+      Error Response: {
+        "statusCode": 409,
+        "headers": {
+          "Access-Control-Allow-Headers": "Content-Type",
+          "Access-Control-Allow-Origin": "*",
+          "Access-Control-Allow-Methods": "*",
+          "Content-Type": "application/json"
+        },
+        "body": "{\"error\":\"User already exists\",\"details\":{\"name\":\"UsernameExistsException\",\"message\":\"User already exists\"}}"
+      }
+
+      at log (src/helpers/api.ts:126:11)
+
+    console.log
+      Received event: {
+        "body": "{\"userType\":\"merchant\",\"email\":\"test@example.com\",\"password\":\"Test123!@#\",\"businessName\":\"Test Business\",\"registrationNumber\":\"REG123456\",\"yearOfRegistration\":2020,\"website\":\"https://example.com\",\"address\":{\"buildingNumber\":\"123\",\"street\":\"Main St\",\"city\":\"TestCity\",\"state\":\"TS\",\"zip\":\"12345\",\"country\":\"TestCountry\"},\"phone\":\"+1234567890\",\"primaryContact\":{\"name\":\"John Doe\",\"email\":\"john@example.com\",\"phone\":\"+1234567890\"},\"productCategories\":[\"Electronics\"]}",
+        "headers": {},
+        "multiValueHeaders": {},
+        "httpMethod": "POST",
+        "isBase64Encoded": false,
+        "path": "/users",
+        "pathParameters": null,
+        "queryStringParameters": null,
+        "multiValueQueryStringParameters": null,
+        "stageVariables": null,
+        "resource": "/users",
+        "requestContext": {}
+      }
+
+      at log (lib/api/endpoints/users/post/helpers.ts:488:11)
+
+    console.log
+      Signing up user with Cognito: {
+        email: 'test@example.com',
+        userPoolClientId: 'test-client-id',
+        attributesCount: 2
+      }
+
+      at log (lib/api/endpoints/users/post/helpers.ts:302:11)
+
+    console.log
+      Cognito sign-up response: {
+        "UserSub": "test-user-123",
+        "UserConfirmed": false
+      }
+
+      at log (lib/api/endpoints/users/post/helpers.ts:318:13)
+
+    console.log
+      Adding user test@example.com to group merchant
+
+      at log (lib/api/endpoints/users/post/helpers.ts:350:11)
+
+    console.log
+      User test@example.com successfully added to group merchant
+
+      at log (lib/api/endpoints/users/post/helpers.ts:360:11)
+
+    console.log
+      Saving user profile to DynamoDB: {
+        userId: 'test-user-123',
+        userType: 'merchant',
+        tableName: 'UsersTable'
+      }
+
+      at log (lib/api/endpoints/users/post/helpers.ts:377:11)
+
+    console.error
+      Error in sign-up handler: Error: Profile already exists
+          at saveUserProfileToDynamoDB (/home/nickt/projects/super-deals/users-ms/lib/api/endpoints/users/post/helpers.ts:395:27)
+          at processTicksAndRejections (node:internal/process/task_queues:105:5)
+          at stepSaveProfile (/home/nickt/projects/super-deals/users-ms/lib/api/endpoints/users/post/handler.ts:163:3)
+          at Object.runMerchantPipeline [as merchant] (/home/nickt/projects/super-deals/users-ms/lib/api/endpoints/users/post/handler.ts:197:11)
+          at handler (/home/nickt/projects/super-deals/users-ms/lib/api/endpoints/users/post/handler.ts:104:22)
+          at Object.<anonymous> (/home/nickt/projects/super-deals/users-ms/test/lib/api/endpoints/users/post/handler.test.ts:152:17) {
+        statusCode: 409,
+        details: {
+          name: 'ConditionalCheckFailedException',
+          message: 'Item already exists'
+        }
+      }
+
+      494 |  */
+      495 | export function logError(err: unknown): void {
+    > 496 |   console.error("Error in sign-up handler:", err);
+          |           ^
+      497 | }
+      498 |
+
+      at error (lib/api/endpoints/users/post/helpers.ts:496:11)
+      at handler (lib/api/endpoints/users/post/handler.ts:107:13)
+      at Object.<anonymous> (test/lib/api/endpoints/users/post/handler.test.ts:152:17)
+
+    console.log
+      Error: Profile already exists
+          at saveUserProfileToDynamoDB (/home/nickt/projects/super-deals/users-ms/lib/api/endpoints/users/post/helpers.ts:395:27)
+          at processTicksAndRejections (node:internal/process/task_queues:105:5)
+          at stepSaveProfile (/home/nickt/projects/super-deals/users-ms/lib/api/endpoints/users/post/handler.ts:163:3)
+          at Object.runMerchantPipeline [as merchant] (/home/nickt/projects/super-deals/users-ms/lib/api/endpoints/users/post/handler.ts:197:11)
+          at handler (/home/nickt/projects/super-deals/users-ms/lib/api/endpoints/users/post/handler.ts:104:22)
+          at Object.<anonymous> (/home/nickt/projects/super-deals/users-ms/test/lib/api/endpoints/users/post/handler.test.ts:152:17) {
+        statusCode: 409,
+        details: {
+          name: 'ConditionalCheckFailedException',
+          message: 'Item already exists'
+        }
+      }
+
+      at log (lib/api/endpoints/users/post/helpers.ts:466:11)
+
+    console.log
+      Error Response: {
+        "statusCode": 409,
+        "headers": {
+          "Access-Control-Allow-Headers": "Content-Type",
+          "Access-Control-Allow-Origin": "*",
+          "Access-Control-Allow-Methods": "*",
+          "Content-Type": "application/json"
+        },
+        "body": "{\"error\":\"Profile already exists\",\"details\":{\"name\":\"ConditionalCheckFailedException\",\"message\":\"Item already exists\"}}"
+      }
+
+      at log (src/helpers/api.ts:126:11)
+
+    console.log
+      Received event: {
+        "body": "{\"userType\":\"merchant\",\"email\":\"test@example.com\",\"password\":\"Test123!@#\",\"businessName\":\"Test Business\",\"registrationNumber\":\"REG123456\",\"yearOfRegistration\":2020,\"website\":\"https://example.com\",\"address\":{\"buildingNumber\":\"123\",\"street\":\"Main St\",\"city\":\"TestCity\",\"state\":\"TS\",\"zip\":\"12345\",\"country\":\"TestCountry\"},\"phone\":\"+1234567890\",\"primaryContact\":{\"name\":\"John Doe\",\"email\":\"john@example.com\",\"phone\":\"+1234567890\"},\"productCategories\":[\"Electronics\"]}",
+        "headers": {},
+        "multiValueHeaders": {},
+        "httpMethod": "POST",
+        "isBase64Encoded": false,
+        "path": "/users",
+        "pathParameters": null,
+        "queryStringParameters": null,
+        "multiValueQueryStringParameters": null,
+        "stageVariables": null,
+        "resource": "/users",
+        "requestContext": {}
+      }
+
+      at log (lib/api/endpoints/users/post/helpers.ts:488:11)
+
+    console.log
+      Signing up user with Cognito: {
+        email: 'test@example.com',
+        userPoolClientId: 'test-client-id',
+        attributesCount: 2
+      }
+
+      at log (lib/api/endpoints/users/post/helpers.ts:302:11)
+
+    console.error
+      Error in sign-up handler: Error: Error during sign-up
+          at registerUserWithCognito (/home/nickt/projects/super-deals/users-ms/lib/api/endpoints/users/post/helpers.ts:331:25)
+          at processTicksAndRejections (node:internal/process/task_queues:105:5)
+          at stepSignUpInCognito (/home/nickt/projects/super-deals/users-ms/lib/api/endpoints/users/post/handler.ts:137:16)
+          at Object.runMerchantPipeline [as merchant] (/home/nickt/projects/super-deals/users-ms/lib/api/endpoints/users/post/handler.ts:197:11)
+          at handler (/home/nickt/projects/super-deals/users-ms/lib/api/endpoints/users/post/handler.ts:104:22)
+          at Object.<anonymous> (/home/nickt/projects/super-deals/users-ms/test/lib/api/endpoints/users/post/handler.test.ts:164:17) {
+        statusCode: 502,
+        details: { name: 'InternalErrorException', message: 'Cognito internal error' }
+      }
+
+      494 |  */
+      495 | export function logError(err: unknown): void {
+    > 496 |   console.error("Error in sign-up handler:", err);
+          |           ^
+      497 | }
+      498 |
+
+      at error (lib/api/endpoints/users/post/helpers.ts:496:11)
+      at handler (lib/api/endpoints/users/post/handler.ts:107:13)
+      at Object.<anonymous> (test/lib/api/endpoints/users/post/handler.test.ts:164:17)
+
+    console.log
+      Error: Error during sign-up
+          at registerUserWithCognito (/home/nickt/projects/super-deals/users-ms/lib/api/endpoints/users/post/helpers.ts:331:25)
+          at processTicksAndRejections (node:internal/process/task_queues:105:5)
+          at stepSignUpInCognito (/home/nickt/projects/super-deals/users-ms/lib/api/endpoints/users/post/handler.ts:137:16)
+          at Object.runMerchantPipeline [as merchant] (/home/nickt/projects/super-deals/users-ms/lib/api/endpoints/users/post/handler.ts:197:11)
+          at handler (/home/nickt/projects/super-deals/users-ms/lib/api/endpoints/users/post/handler.ts:104:22)
+          at Object.<anonymous> (/home/nickt/projects/super-deals/users-ms/test/lib/api/endpoints/users/post/handler.test.ts:164:17) {
+        statusCode: 502,
+        details: { name: 'InternalErrorException', message: 'Cognito internal error' }
+      }
+
+      at log (lib/api/endpoints/users/post/helpers.ts:466:11)
+
+    console.log
+      Error Response: {
+        "statusCode": 502,
+        "headers": {
+          "Access-Control-Allow-Headers": "Content-Type",
+          "Access-Control-Allow-Origin": "*",
+          "Access-Control-Allow-Methods": "*",
+          "Content-Type": "application/json"
+        },
+        "body": "{\"error\":\"Error during sign-up\",\"details\":{\"name\":\"InternalErrorException\",\"message\":\"Cognito internal error\"}}"
+      }
+
+      at log (src/helpers/api.ts:126:11)
+
+    console.log
+      Received event: {
+        "body": "{\"userType\":\"merchant\",\"email\":\"test@example.com\",\"password\":\"Test123!@#\",\"businessName\":\"Test Business\",\"registrationNumber\":\"REG123456\",\"yearOfRegistration\":2020,\"website\":\"https://example.com\",\"address\":{\"buildingNumber\":\"123\",\"street\":\"Main St\",\"city\":\"TestCity\",\"state\":\"TS\",\"zip\":\"12345\",\"country\":\"TestCountry\"},\"phone\":\"+1234567890\",\"primaryContact\":{\"name\":\"John Doe\",\"email\":\"john@example.com\",\"phone\":\"+1234567890\"},\"productCategories\":[\"Electronics\"]}",
+        "headers": {},
+        "multiValueHeaders": {},
+        "httpMethod": "POST",
+        "isBase64Encoded": false,
+        "path": "/users",
+        "pathParameters": null,
+        "queryStringParameters": null,
+        "multiValueQueryStringParameters": null,
+        "stageVariables": null,
+        "resource": "/users",
+        "requestContext": {}
+      }
+
+      at log (lib/api/endpoints/users/post/helpers.ts:488:11)
+
+    console.log
+      Signing up user with Cognito: {
+        email: 'test@example.com',
+        userPoolClientId: 'test-client-id',
+        attributesCount: 2
+      }
+
+      at log (lib/api/endpoints/users/post/helpers.ts:302:11)
+
+    console.log
+      Cognito sign-up response: {
+        "UserSub": "test-user-123",
+        "UserConfirmed": false
+      }
+
+      at log (lib/api/endpoints/users/post/helpers.ts:318:13)
+
+    console.log
+      Adding user test@example.com to group merchant
+
+      at log (lib/api/endpoints/users/post/helpers.ts:350:11)
+
+    console.log
+      User test@example.com successfully added to group merchant
+
+      at log (lib/api/endpoints/users/post/helpers.ts:360:11)
+
+    console.log
+      Saving user profile to DynamoDB: {
+        userId: 'test-user-123',
+        userType: 'merchant',
+        tableName: 'UsersTable'
+      }
+
+      at log (lib/api/endpoints/users/post/helpers.ts:377:11)
+
+    console.error
+      Error in sign-up handler: Error: Error saving profile
+          at saveUserProfileToDynamoDB (/home/nickt/projects/super-deals/users-ms/lib/api/endpoints/users/post/helpers.ts:400:25)
+          at processTicksAndRejections (node:internal/process/task_queues:105:5)
+          at stepSaveProfile (/home/nickt/projects/super-deals/users-ms/lib/api/endpoints/users/post/handler.ts:163:3)
+          at Object.runMerchantPipeline [as merchant] (/home/nickt/projects/super-deals/users-ms/lib/api/endpoints/users/post/handler.ts:197:11)
+          at handler (/home/nickt/projects/super-deals/users-ms/lib/api/endpoints/users/post/handler.ts:104:22)
+          at Object.<anonymous> (/home/nickt/projects/super-deals/users-ms/test/lib/api/endpoints/users/post/handler.test.ts:184:17) {
+        statusCode: 502,
+        details: { name: 'ServiceUnavailable', message: 'DynamoDB unavailable' }
+      }
+
+      494 |  */
+      495 | export function logError(err: unknown): void {
+    > 496 |   console.error("Error in sign-up handler:", err);
+          |           ^
+      497 | }
+      498 |
+
+      at error (lib/api/endpoints/users/post/helpers.ts:496:11)
+      at handler (lib/api/endpoints/users/post/handler.ts:107:13)
+      at Object.<anonymous> (test/lib/api/endpoints/users/post/handler.test.ts:184:17)
+
+    console.log
+      Error: Error saving profile
+          at saveUserProfileToDynamoDB (/home/nickt/projects/super-deals/users-ms/lib/api/endpoints/users/post/helpers.ts:400:25)
+          at processTicksAndRejections (node:internal/process/task_queues:105:5)
+          at stepSaveProfile (/home/nickt/projects/super-deals/users-ms/lib/api/endpoints/users/post/handler.ts:163:3)
+          at Object.runMerchantPipeline [as merchant] (/home/nickt/projects/super-deals/users-ms/lib/api/endpoints/users/post/handler.ts:197:11)
+          at handler (/home/nickt/projects/super-deals/users-ms/lib/api/endpoints/users/post/handler.ts:104:22)
+          at Object.<anonymous> (/home/nickt/projects/super-deals/users-ms/test/lib/api/endpoints/users/post/handler.test.ts:184:17) {
+        statusCode: 502,
+        details: { name: 'ServiceUnavailable', message: 'DynamoDB unavailable' }
+      }
+
+      at log (lib/api/endpoints/users/post/helpers.ts:466:11)
+
+    console.log
+      Error Response: {
+        "statusCode": 502,
+        "headers": {
+          "Access-Control-Allow-Headers": "Content-Type",
+          "Access-Control-Allow-Origin": "*",
+          "Access-Control-Allow-Methods": "*",
+          "Content-Type": "application/json"
+        },
+        "body": "{\"error\":\"Error saving profile\",\"details\":{\"name\":\"ServiceUnavailable\",\"message\":\"DynamoDB unavailable\"}}"
+      }
+
+      at log (src/helpers/api.ts:126:11)
+
+    console.log
+      Received event: {
+        "body": "{\"userType\":\"merchant\",\"email\":\"test@example.com\",\"password\":\"Test123!@#\",\"businessName\":\"Test Business\",\"registrationNumber\":\"REG123456\",\"yearOfRegistration\":2020,\"website\":\"https://example.com\",\"address\":{\"buildingNumber\":\"123\",\"street\":\"Main St\",\"city\":\"TestCity\",\"state\":\"TS\",\"zip\":\"12345\",\"country\":\"TestCountry\"},\"phone\":\"+1234567890\",\"primaryContact\":{\"name\":\"John Doe\",\"email\":\"john@example.com\",\"phone\":\"+1234567890\"},\"productCategories\":[\"Electronics\"]}",
+        "headers": {},
+        "multiValueHeaders": {},
+        "httpMethod": "POST",
+        "isBase64Encoded": false,
+        "path": "/users",
+        "pathParameters": null,
+        "queryStringParameters": null,
+        "multiValueQueryStringParameters": null,
+        "stageVariables": null,
+        "resource": "/users",
+        "requestContext": {}
+      }
+
+      at log (lib/api/endpoints/users/post/helpers.ts:488:11)
+
+    console.log
+      Error Response: {
+        "statusCode": 500,
+        "headers": {
+          "Access-Control-Allow-Headers": "Content-Type",
+          "Access-Control-Allow-Origin": "*",
+          "Access-Control-Allow-Methods": "*",
+          "Content-Type": "application/json"
+        },
+        "body": "{\"error\":\"Server configuration error\",\"details\":{\"missing\":{\"USER_POOL_ID\":true,\"USER_POOL_CLIENT_ID\":false,\"TABLE_NAME\":false}}}"
+      }
+
+      at log (src/helpers/api.ts:126:11)
+
+    console.log
+      Received event: {
+        "body": "{\"userType\":\"merchant\",\"email\":\"test@example.com\",\"password\":\"Test123!@#\",\"businessName\":\"Test Business\",\"registrationNumber\":\"REG123456\",\"yearOfRegistration\":2020,\"website\":\"https://example.com\",\"address\":{\"buildingNumber\":\"123\",\"street\":\"Main St\",\"city\":\"TestCity\",\"state\":\"TS\",\"zip\":\"12345\",\"country\":\"TestCountry\"},\"phone\":\"+1234567890\",\"primaryContact\":{\"name\":\"John Doe\",\"email\":\"john@example.com\",\"phone\":\"+1234567890\"},\"productCategories\":[\"Electronics\"]}",
+        "headers": {},
+        "multiValueHeaders": {},
+        "httpMethod": "POST",
+        "isBase64Encoded": false,
+        "path": "/users",
+        "pathParameters": null,
+        "queryStringParameters": null,
+        "multiValueQueryStringParameters": null,
+        "stageVariables": null,
+        "resource": "/users",
+        "requestContext": {}
+      }
+
+      at log (lib/api/endpoints/users/post/helpers.ts:488:11)
+
+    console.log
+      Error Response: {
+        "statusCode": 500,
+        "headers": {
+          "Access-Control-Allow-Headers": "Content-Type",
+          "Access-Control-Allow-Origin": "*",
+          "Access-Control-Allow-Methods": "*",
+          "Content-Type": "application/json"
+        },
+        "body": "{\"error\":\"Server configuration error\",\"details\":{\"missing\":{\"USER_POOL_ID\":false,\"USER_POOL_CLIENT_ID\":true,\"TABLE_NAME\":false}}}"
+      }
+
+      at log (src/helpers/api.ts:126:11)
+
+    console.log
+      Received event: {
+        "body": "{\"userType\":\"merchant\",\"email\":\"test@example.com\",\"password\":\"Test123!@#\",\"businessName\":\"Test Business\",\"registrationNumber\":\"REG123456\",\"yearOfRegistration\":2020,\"website\":\"https://example.com\",\"address\":{\"buildingNumber\":\"123\",\"street\":\"Main St\",\"city\":\"TestCity\",\"state\":\"TS\",\"zip\":\"12345\",\"country\":\"TestCountry\"},\"phone\":\"+1234567890\",\"primaryContact\":{\"name\":\"John Doe\",\"email\":\"john@example.com\",\"phone\":\"+1234567890\"},\"productCategories\":[\"Electronics\"]}",
+        "headers": {},
+        "multiValueHeaders": {},
+        "httpMethod": "POST",
+        "isBase64Encoded": false,
+        "path": "/users",
+        "pathParameters": null,
+        "queryStringParameters": null,
+        "multiValueQueryStringParameters": null,
+        "stageVariables": null,
+        "resource": "/users",
+        "requestContext": {}
+      }
+
+      at log (lib/api/endpoints/users/post/helpers.ts:488:11)
+
+    console.log
+      Error Response: {
+        "statusCode": 500,
+        "headers": {
+          "Access-Control-Allow-Headers": "Content-Type",
+          "Access-Control-Allow-Origin": "*",
+          "Access-Control-Allow-Methods": "*",
+          "Content-Type": "application/json"
+        },
+        "body": "{\"error\":\"Server configuration error\",\"details\":{\"missing\":{\"USER_POOL_ID\":false,\"USER_POOL_CLIENT_ID\":false,\"TABLE_NAME\":true}}}"
+      }
+
+      at log (src/helpers/api.ts:126:11)
+
+    console.log
+      Received event: {
+        "body": "{not-json",
+        "headers": {},
+        "multiValueHeaders": {},
+        "httpMethod": "POST",
+        "isBase64Encoded": false,
+        "path": "/users",
+        "pathParameters": null,
+        "queryStringParameters": null,
+        "multiValueQueryStringParameters": null,
+        "stageVariables": null,
+        "resource": "/users",
+        "requestContext": {}
+      }
+
+      at log (lib/api/endpoints/users/post/helpers.ts:488:11)
+
+    console.log
+      Error Response: {
+        "statusCode": 400,
+        "headers": {
+          "Access-Control-Allow-Headers": "Content-Type",
+          "Access-Control-Allow-Origin": "*",
+          "Access-Control-Allow-Methods": "*",
+          "Content-Type": "application/json"
+        },
+        "body": "{\"error\":\"Invalid JSON in request body\",\"details\":{\"name\":\"SyntaxError\",\"message\":\"Expected property name or '}' in JSON at position 1 (line 1 column 2)\"}}"
+      }
+
+      at log (src/helpers/api.ts:126:11)
+
+    console.log
+      Received event: {
+        "headers": {},
+        "multiValueHeaders": {},
+        "httpMethod": "POST",
+        "isBase64Encoded": false,
+        "path": "/users",
+        "pathParameters": null,
+        "queryStringParameters": null,
+        "multiValueQueryStringParameters": null,
+        "stageVariables": null,
+        "resource": "/users",
+        "requestContext": {}
+      }
+
+      at log (lib/api/endpoints/users/post/helpers.ts:488:11)
+
+    console.log
+      Error Response: {
+        "statusCode": 400,
+        "headers": {
+          "Access-Control-Allow-Headers": "Content-Type",
+          "Access-Control-Allow-Origin": "*",
+          "Access-Control-Allow-Methods": "*",
+          "Content-Type": "application/json"
+        },
+        "body": "{\"error\":\"Invalid request body: body is required\"}"
+      }
+
+      at log (src/helpers/api.ts:126:11)
+
+    console.log
+      Received event: {
+        "body": "{\"userType\":\"merchant\",\"email\":\"not-an-email\",\"password\":\"Test123!@#\",\"businessName\":\"Test Business\",\"registrationNumber\":\"REG123456\",\"yearOfRegistration\":2020,\"website\":\"https://example.com\",\"address\":{\"buildingNumber\":\"123\",\"street\":\"Main St\",\"city\":\"TestCity\",\"state\":\"TS\",\"zip\":\"12345\",\"country\":\"TestCountry\"},\"phone\":\"+1234567890\",\"primaryContact\":{\"name\":\"John Doe\",\"email\":\"john@example.com\",\"phone\":\"+1234567890\"},\"productCategories\":[\"Electronics\"]}",
+        "headers": {},
+        "multiValueHeaders": {},
+        "httpMethod": "POST",
+        "isBase64Encoded": false,
+        "path": "/users",
+        "pathParameters": null,
+        "queryStringParameters": null,
+        "multiValueQueryStringParameters": null,
+        "stageVariables": null,
+        "resource": "/users",
+        "requestContext": {}
+      }
+
+      at log (lib/api/endpoints/users/post/helpers.ts:488:11)
+
+    console.log
+      Error Response: {
+        "statusCode": 400,
+        "headers": {
+          "Access-Control-Allow-Headers": "Content-Type",
+          "Access-Control-Allow-Origin": "*",
+          "Access-Control-Allow-Methods": "*",
+          "Content-Type": "application/json"
+        },
+        "body": "{\"error\":\"Invalid request body\",\"details\":{\"formErrors\":[],\"fieldErrors\":{\"email\":[\"Invalid email address\"]}}}"
+      }
+
+      at log (src/helpers/api.ts:126:11)
+
+    console.log
+      Received event: {
+        "body": "{\"userType\":\"merchant\",\"email\":\"test@example.com\",\"password\":\"Test123!@#\",\"businessName\":\"Test Business\",\"registrationNumber\":\"REG123456\",\"yearOfRegistration\":2026,\"website\":\"https://example.com\",\"address\":{\"buildingNumber\":\"123\",\"street\":\"Main St\",\"city\":\"TestCity\",\"state\":\"TS\",\"zip\":\"12345\",\"country\":\"TestCountry\"},\"phone\":\"+1234567890\",\"primaryContact\":{\"name\":\"John Doe\",\"email\":\"john@example.com\",\"phone\":\"+1234567890\"},\"productCategories\":[\"Electronics\"]}",
+        "headers": {},
+        "multiValueHeaders": {},
+        "httpMethod": "POST",
+        "isBase64Encoded": false,
+        "path": "/users",
+        "pathParameters": null,
+        "queryStringParameters": null,
+        "multiValueQueryStringParameters": null,
+        "stageVariables": null,
+        "resource": "/users",
+        "requestContext": {}
+      }
+
+      at log (lib/api/endpoints/users/post/helpers.ts:488:11)
+
+    console.log
+      Error Response: {
+        "statusCode": 400,
+        "headers": {
+          "Access-Control-Allow-Headers": "Content-Type",
+          "Access-Control-Allow-Origin": "*",
+          "Access-Control-Allow-Methods": "*",
+          "Content-Type": "application/json"
+        },
+        "body": "{\"error\":\"Invalid request body\",\"details\":{\"formErrors\":[],\"fieldErrors\":{\"yearOfRegistration\":[\"Too big: expected number to be <=2025\"]}}}"
+      }
+
+      at log (src/helpers/api.ts:126:11)
+
+    console.log
+      Received event: {
+        "body": "{\"userType\":\"merchant\",\"email\":\"test@example.com\",\"password\":\"Test123!@#\",\"businessName\":\"Test Business\",\"registrationNumber\":\"REG123456\",\"yearOfRegistration\":2020,\"website\":\"not-a-url\",\"address\":{\"buildingNumber\":\"123\",\"street\":\"Main St\",\"city\":\"TestCity\",\"state\":\"TS\",\"zip\":\"12345\",\"country\":\"TestCountry\"},\"phone\":\"+1234567890\",\"primaryContact\":{\"name\":\"John Doe\",\"email\":\"john@example.com\",\"phone\":\"+1234567890\"},\"productCategories\":[\"Electronics\"]}",
+        "headers": {},
+        "multiValueHeaders": {},
+        "httpMethod": "POST",
+        "isBase64Encoded": false,
+        "path": "/users",
+        "pathParameters": null,
+        "queryStringParameters": null,
+        "multiValueQueryStringParameters": null,
+        "stageVariables": null,
+        "resource": "/users",
+        "requestContext": {}
+      }
+
+      at log (lib/api/endpoints/users/post/helpers.ts:488:11)
+
+    console.log
+      Error Response: {
+        "statusCode": 400,
+        "headers": {
+          "Access-Control-Allow-Headers": "Content-Type",
+          "Access-Control-Allow-Origin": "*",
+          "Access-Control-Allow-Methods": "*",
+          "Content-Type": "application/json"
+        },
+        "body": "{\"error\":\"Invalid request body\",\"details\":{\"formErrors\":[],\"fieldErrors\":{\"website\":[\"Invalid URL\"]}}}"
+      }
+
+      at log (src/helpers/api.ts:126:11)
+
+    console.log
+      Received event: {
+        "body": "{\"userType\":\"customer\",\"email\":\"test@example.com\",\"password\":\"Test123!@#\",\"businessName\":\"Test Business\",\"registrationNumber\":\"REG123456\",\"yearOfRegistration\":2020,\"website\":\"https://example.com\",\"address\":{\"buildingNumber\":\"123\",\"street\":\"Main St\",\"city\":\"TestCity\",\"state\":\"TS\",\"zip\":\"12345\",\"country\":\"TestCountry\"},\"phone\":\"+1234567890\",\"primaryContact\":{\"name\":\"John Doe\",\"email\":\"john@example.com\",\"phone\":\"+1234567890\"},\"productCategories\":[\"Electronics\"]}",
+        "headers": {},
+        "multiValueHeaders": {},
+        "httpMethod": "POST",
+        "isBase64Encoded": false,
+        "path": "/users",
+        "pathParameters": null,
+        "queryStringParameters": null,
+        "multiValueQueryStringParameters": null,
+        "stageVariables": null,
+        "resource": "/users",
+        "requestContext": {}
+      }
+
+      at log (lib/api/endpoints/users/post/helpers.ts:488:11)
+
+    console.log
+      Error Response: {
+        "statusCode": 400,
+        "headers": {
+          "Access-Control-Allow-Headers": "Content-Type",
+          "Access-Control-Allow-Origin": "*",
+          "Access-Control-Allow-Methods": "*",
+          "Content-Type": "application/json"
+        },
+        "body": "{\"error\":\"Invalid request body\",\"details\":{\"formErrors\":[],\"fieldErrors\":{\"userType\":[\"Invalid input: expected \\\"merchant\\\"\"]}}}"
+      }
+
+      at log (src/helpers/api.ts:126:11)
+
+    console.log
+      Received event: {
+        "body": "{\"userType\":\"admin\",\"email\":\"test@example.com\",\"password\":\"Test123!@#\",\"businessName\":\"Test Business\",\"registrationNumber\":\"REG123456\",\"yearOfRegistration\":2020,\"website\":\"https://example.com\",\"address\":{\"buildingNumber\":\"123\",\"street\":\"Main St\",\"city\":\"TestCity\",\"state\":\"TS\",\"zip\":\"12345\",\"country\":\"TestCountry\"},\"phone\":\"+1234567890\",\"primaryContact\":{\"name\":\"John Doe\",\"email\":\"john@example.com\",\"phone\":\"+1234567890\"},\"productCategories\":[\"Electronics\"]}",
+        "headers": {},
+        "multiValueHeaders": {},
+        "httpMethod": "POST",
+        "isBase64Encoded": false,
+        "path": "/users",
+        "pathParameters": null,
+        "queryStringParameters": null,
+        "multiValueQueryStringParameters": null,
+        "stageVariables": null,
+        "resource": "/users",
+        "requestContext": {}
+      }
+
+      at log (lib/api/endpoints/users/post/helpers.ts:488:11)
+
+    console.log
+      Error Response: {
+        "statusCode": 400,
+        "headers": {
+          "Access-Control-Allow-Headers": "Content-Type",
+          "Access-Control-Allow-Origin": "*",
+          "Access-Control-Allow-Methods": "*",
+          "Content-Type": "application/json"
+        },
+        "body": "{\"error\":\"Invalid request body\",\"details\":{\"formErrors\":[],\"fieldErrors\":{\"userType\":[\"Invalid input: expected \\\"merchant\\\"\"]}}}"
+      }
+
+      at log (src/helpers/api.ts:126:11)
+
+    console.log
+      Received event: {
+        "body": "{\"userType\":\"merchant\",\"email\":\"  TEST@EXAMPLE.COM  \",\"password\":\"Test123!@#\",\"businessName\":\"  Test Business  \",\"registrationNumber\":\"REG123456\",\"yearOfRegistration\":2020,\"website\":\"https://example.com\",\"address\":{\"buildingNumber\":\"123\",\"street\":\"Main St\",\"city\":\"TestCity\",\"state\":\"TS\",\"zip\":\"12345\",\"country\":\"TestCountry\"},\"phone\":\"+1234567890\",\"primaryContact\":{\"name\":\"John Doe\",\"email\":\"john@example.com\",\"phone\":\"+1234567890\"},\"productCategories\":[\"Electronics\"]}",
+        "headers": {},
+        "multiValueHeaders": {},
+        "httpMethod": "POST",
+        "isBase64Encoded": false,
+        "path": "/users",
+        "pathParameters": null,
+        "queryStringParameters": null,
+        "multiValueQueryStringParameters": null,
+        "stageVariables": null,
+        "resource": "/users",
+        "requestContext": {}
+      }
+
+      at log (lib/api/endpoints/users/post/helpers.ts:488:11)
+
+    console.log
+      Signing up user with Cognito: {
+        email: 'test@example.com',
+        userPoolClientId: 'test-client-id',
+        attributesCount: 2
+      }
+
+      at log (lib/api/endpoints/users/post/helpers.ts:302:11)
+
+    console.log
+      Cognito sign-up response: {
+        "UserSub": "test-user-123",
+        "UserConfirmed": false
+      }
+
+      at log (lib/api/endpoints/users/post/helpers.ts:318:13)
+
+    console.log
+      Adding user test@example.com to group merchant
+
+      at log (lib/api/endpoints/users/post/helpers.ts:350:11)
+
+    console.log
+      User test@example.com successfully added to group merchant
+
+      at log (lib/api/endpoints/users/post/helpers.ts:360:11)
+
+    console.log
+      Saving user profile to DynamoDB: {
+        userId: 'test-user-123',
+        userType: 'merchant',
+        tableName: 'UsersTable'
+      }
+
+      at log (lib/api/endpoints/users/post/helpers.ts:377:11)
+
+    console.log
+      Success Response: {
+        "statusCode": 201,
+        "headers": {
+          "Access-Control-Allow-Headers": "Content-Type",
+          "Access-Control-Allow-Origin": "*",
+          "Access-Control-Allow-Methods": "*",
+          "Content-Type": "application/json"
+        },
+        "body": "{\"message\":\"Merchant registered. Needs to submit OTP to complete sign-up\",\"userConfirmed\":false,\"userType\":\"merchant\",\"userId\":\"test-user-123\",\"merchantId\":\"test-user-123\"}"
+      }
+
+      at log (lib/api/endpoints/users/post/helpers.ts:452:11)
+
+PASS test/config/default.test.ts
+PASS test/lib/api/endpoints/users/post/helpers.test.ts
+PASS test/src/helpers/api.test.ts
+PASS test/lib/permissions/oauth/construct.test.ts
+PASS test/src/helpers/config.test.ts
+PASS test/lib/api/endpoints/bindings/handler.test.ts
+PASS test/lib/permissions/resource-server/construct.test.ts
+PASS test/lib/service-stack.test.ts (12.518 s)
+-----------------------------------------------------------|---------|----------|---------|---------|---------------------------------
+File                                                       | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s               
+-----------------------------------------------------------|---------|----------|---------|---------|---------------------------------
+All files                                                  |   97.41 |    84.75 |   91.89 |    97.5 |                                 
+ config                                                    |   75.51 |    82.81 |   53.84 |   75.51 |                                 
+  default.ts                                               |   72.09 |    82.81 |   53.84 |   72.09 | 272-305,355-359,364,370,378-381 
+  localstack.ts                                            |     100 |      100 |     100 |     100 |                                 
+  production.ts                                            |     100 |      100 |     100 |     100 |                                 
+  staging.ts                                               |     100 |      100 |     100 |     100 |                                 
+ lib                                                       |     100 |       50 |     100 |     100 |                                 
+  service-stack.ts                                         |     100 |       50 |     100 |     100 | 136                             
+ lib/api                                                   |     100 |      100 |     100 |     100 |                                 
+  construct.ts                                             |     100 |      100 |     100 |     100 |                                 
+ lib/api/authorization                                     |     100 |      100 |     100 |     100 |                                 
+  construct.ts                                             |     100 |      100 |     100 |     100 |                                 
+ lib/api/endpoints                                         |     100 |      100 |     100 |     100 |                                 
+  construct.ts                                             |     100 |      100 |     100 |     100 |                                 
+ lib/api/endpoints/bindings                                |     100 |    94.11 |     100 |     100 |                                 
+  construct.ts                                             |     100 |       50 |     100 |     100 | 54                              
+  handler.ts                                               |     100 |      100 |     100 |     100 |                                 
+  helpers.ts                                               |     100 |      100 |     100 |     100 |                                 
+ lib/api/endpoints/users                                   |     100 |      100 |     100 |     100 |                                 
+  construct.ts                                             |     100 |      100 |     100 |     100 |                                 
+ lib/api/endpoints/users/post                              |   98.91 |    96.55 |   93.93 |   98.89 |                                 
+  api.schema.ts                                            |     100 |      100 |     100 |     100 |                                 
+  construct.ts                                             |     100 |      100 |     100 |     100 |                                 
+  handler.ts                                               |      96 |       75 |      80 |   95.74 | 86-92                           
+  helpers.ts                                               |     100 |      100 |     100 |     100 |                                 
+  payload.schema.ts                                        |     100 |      100 |     100 |     100 |                                 
+ lib/api/stage                                             |     100 |       80 |     100 |     100 |                                 
+  construct.ts                                             |     100 |       80 |     100 |     100 | 33                              
+ lib/auth                                                  |     100 |      100 |     100 |     100 |                                 
+  construct.ts                                             |     100 |      100 |     100 |     100 |                                 
+ lib/auth/identity-pool                                    |     100 |      100 |     100 |     100 |                                 
+  construct.ts                                             |     100 |      100 |     100 |     100 |                                 
+ lib/auth/user-groups                                      |     100 |      100 |     100 |     100 |                                 
+  construct.ts                                             |     100 |      100 |     100 |     100 |                                 
+ lib/auth/user-pool                                        |     100 |       75 |     100 |     100 |                                 
+  construct.ts                                             |     100 |       75 |     100 |     100 | 181                             
+ lib/auth/user-pool/custom-sign-up-message                 |     100 |      100 |     100 |     100 |                                 
+  construct.ts                                             |     100 |      100 |     100 |     100 |                                 
+ lib/auth/user-pool/welcome-email                          |     100 |      100 |     100 |     100 |                                 
+  construct.ts                                             |     100 |      100 |     100 |     100 |                                 
+ lib/auth/user-pool/welcome-email/email-templates          |     100 |      100 |     100 |     100 |                                 
+  construct.ts                                             |     100 |      100 |     100 |     100 |                                 
+ lib/auth/user-pool/welcome-email/email-templates/merchant |     100 |      100 |     100 |     100 |                                 
+  construct.ts                                             |     100 |      100 |     100 |     100 |                                 
+  template.ts                                              |     100 |      100 |     100 |     100 |                                 
+ lib/db                                                    |     100 |       75 |     100 |     100 |                                 
+  construct.ts                                             |     100 |       75 |     100 |     100 | 133                             
+ lib/iam                                                   |     100 |      100 |     100 |     100 |                                 
+  construct.ts                                             |     100 |      100 |     100 |     100 |                                 
+ lib/iam/roles                                             |     100 |      100 |     100 |     100 |                                 
+  construct.ts                                             |     100 |      100 |     100 |     100 |                                 
+ lib/monitor                                               |     100 |      100 |     100 |     100 |                                 
+  construct.ts                                             |     100 |      100 |     100 |     100 |                                 
+ lib/monitor/api                                           |     100 |      100 |     100 |     100 |                                 
+  construct.ts                                             |     100 |      100 |     100 |     100 |                                 
+ lib/monitor/api/4xx                                       |     100 |      100 |     100 |     100 |                                 
+  construct.ts                                             |     100 |      100 |     100 |     100 |                                 
+ lib/monitor/ses                                           |     100 |      100 |     100 |     100 |                                 
+  construct.ts                                             |     100 |      100 |     100 |     100 |                                 
+ lib/permissions                                           |   69.23 |      100 |      50 |   69.23 |                                 
+  construct.ts                                             |   69.23 |      100 |      50 |   69.23 | 45-58                           
+ lib/permissions/oauth                                     |     100 |      100 |     100 |     100 |                                 
+  construct.ts                                             |     100 |      100 |     100 |     100 |                                 
+ lib/permissions/resource-server                           |     100 |      100 |     100 |     100 |                                 
+  construct.ts                                             |     100 |      100 |     100 |     100 |                                 
+ lib/ssm-bindings                                          |     100 |      100 |     100 |     100 |                                 
+  construct.ts                                             |     100 |      100 |     100 |     100 |                                 
+ lib/ssm-bindings/monitor                                  |     100 |      100 |     100 |     100 |                                 
+  construct.ts                                             |     100 |      100 |     100 |     100 |                                 
+ lib/ssm-bindings/website                                  |     100 |      100 |     100 |     100 |                                 
+  construct.ts                                             |     100 |      100 |     100 |     100 |                                 
+ lib/ssm-publications                                      |     100 |      100 |     100 |     100 |                                 
+  construct.ts                                             |     100 |      100 |     100 |     100 |                                 
+ lib/ssm-publications/auth                                 |     100 |      100 |     100 |     100 |                                 
+  construct.ts                                             |     100 |      100 |     100 |     100 |                                 
+ lib/ssm-publications/iam                                  |     100 |      100 |     100 |     100 |                                 
+  construct.ts                                             |     100 |      100 |     100 |     100 |                                 
+ lib/utils/ssm-bindings                                    |     100 |      100 |     100 |     100 |                                 
+  construct.ts                                             |     100 |      100 |     100 |     100 |                                 
+ src/helpers                                               |   99.04 |       75 |     100 |     100 |                                 
+  api.ts                                                   |      96 |    83.33 |     100 |     100 | 170                             
+  config.ts                                                |     100 |    55.55 |     100 |     100 | 39-73                           
+  email.ts                                                 |     100 |      100 |     100 |     100 |                                 
+  ssm.ts                                                   |     100 |    72.72 |     100 |     100 | 242-306                         
+-----------------------------------------------------------|---------|----------|---------|---------|---------------------------------
+
+Test Suites: 13 passed, 13 total
+Tests:       174 passed, 174 total
+Snapshots:   0 total
+Time:        14.409 s, estimated 15 s
+Ran all test suites.
