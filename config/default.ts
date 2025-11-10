@@ -232,11 +232,11 @@ const defaultConfig: IConfig = {
 
   // Service metadata
   service: {
-    name: process.env.SERVICE_NAME || "users-ms",
+    name: process.env.SERVICE_NAME || "svc-merchants",
     displayName:
       process.env.SERVICE_DISPLAY_NAME ||
       process.env.SERVICE_NAME ||
-      "Microservice",
+      "Merchants Microservice",
   },
 
   // Feature toggles

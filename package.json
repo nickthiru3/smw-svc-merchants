@@ -1,5 +1,5 @@
 {
-  "name": "super-deals-auth-ms",
+  "name": "svc-merchants",
   "version": "0.1.0",
   "bin": {
     "microservice-app": "bin/app.js"

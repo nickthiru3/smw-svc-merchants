@@ -1,7 +1,7 @@
 /**
- * Users Microservice Stack
+ * Merchants Microservice Stack
  *
- * Main CDK stack that orchestrates all infrastructure for the users microservice.
+ * Main CDK stack that orchestrates all infrastructure for the merchants microservice.
  * Creates and wires together all constructs in the correct dependency order.
  *
  * Architecture:
@@ -57,9 +57,9 @@ interface IServiceStackProps extends StackProps {
 }
 
 /**
- * Users Microservice Service Stack
+ * Merchants Microservice Service Stack
  *
- * Creates all infrastructure for the users microservice including:
+ * Creates all infrastructure for the merchants microservice including:
  * - Authentication (Cognito User Pool, Identity Pool)
  * - Database (DynamoDB table for user data)
  * - API (API Gateway with Lambda endpoints)
@@ -74,11 +74,11 @@ interface IServiceStackProps extends StackProps {
  * @example
  * // Create service stack
  * const app = new App();
- * new ServiceStack(app, 'dev-users-ms-ServiceStack', {
+ * new ServiceStack(app, 'dev-svc-merchants-ServiceStack', {
  *   env: { account: '123456789012', region: 'us-east-1' },
  *   config: appConfig,
- *   description: 'Users Microservice Infrastructure (dev)',
- *   tags: { Environment: 'dev', Service: 'users-ms' }
+ *   description: 'Merchants Microservice Infrastructure (dev)',
+ *   tags: { Environment: 'dev', Service: 'svc-merchants' }
  * });
  */
 export class ServiceStack extends Stack {

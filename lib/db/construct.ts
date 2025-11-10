@@ -18,7 +18,11 @@
 
 import { RemovalPolicy, CfnOutput } from "aws-cdk-lib";
 import { Construct } from "constructs";
-import { TableV2, AttributeType } from "aws-cdk-lib/aws-dynamodb";
+import {
+  TableV2,
+  AttributeType,
+  ProjectionType,
+} from "aws-cdk-lib/aws-dynamodb";
 import type { IConfig } from "#config/default";
 
 /**
@@ -121,6 +125,7 @@ class DatabaseConstruct extends Construct {
             name: "GSI1SK",
             type: AttributeType.STRING,
           },
+          projectionType: ProjectionType.ALL,
         },
       ],
       // Prevent accidental deletion in production/staging
