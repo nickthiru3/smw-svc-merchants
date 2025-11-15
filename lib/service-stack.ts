@@ -88,7 +88,7 @@ export class ServiceStack extends Stack {
    * Orchestrates infrastructure creation in this order:
    * 1. SSM Bindings - Read external service configurations
    * 2. Monitor - CloudWatch alarms and SNS topics
-   * 3. Database - DynamoDB table for user data
+   * 3. Database - DynamoDB tables for merchant data (Faux-SQL design)
    * 4. Auth - Cognito User Pool, Identity Pool, Groups
    * 5. IAM - Roles for authenticated users
    * 6. Permissions - OAuth scopes (if enabled)
@@ -115,7 +115,7 @@ export class ServiceStack extends Stack {
       ssmBindings,
     });
 
-    // 3. Database - DynamoDB table for user profile data
+    // 3. Database - DynamoDB tables for merchant data (Faux-SQL design)
     const db = new DatabaseConstruct(this, "DatabaseConstruct", {
       config,
     });

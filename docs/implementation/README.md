@@ -7,64 +7,88 @@
 
 ## Overview
 
-This guide covers how to implement backend features for the Merchants microservice using the CDK constructs and patterns established in this template.
+This directory contains implementation guides for building backend features in the Merchants microservice.
 
 **Prerequisites:**
 
-- Story card completed through Phase 3 (API Design & Contracts)
-- API specification available at `docs/project/specs/stories/[story]/api.yml`
-- Data model designed with access patterns documented
+- ✅ Story card completed through Phase 3 (API Design & Contracts)
+- ✅ API specification available
+- ✅ Data model designed with access patterns documented
 
 ---
 
-## Quick Start
+## Getting Started
 
-### 1. Review the Story Artifacts
+**Just finished Phase 3 (API Design & Contracts)?** Start here:
 
-Before implementing, ensure you have:
+### 1. Read the Microservice Development Guide
 
-- ✅ Story card with acceptance criteria
-- ✅ Sequence diagrams showing service interactions
-- ✅ Actions & Queries document (CQS separation)
-- ✅ OpenAPI specification for endpoints
-- ✅ DynamoDB data model with entity files
+**[→ Microservice Development Guide](./microservice-development-guide.md)**
 
-**Location**: `docs/project/specs/stories/[actor]/[story-name]/`
+This is your **primary guide** for implementing backend features. It provides:
 
-### 2. Understand the Stack Architecture
+- ✅ Comprehensive 11-step workflow (from bootstrap to deployment)
+- ✅ Step-by-step instructions with examples
+- ✅ Testing strategy integrated throughout
+- ✅ When to reference detailed implementation guides
+- ✅ Best practices and troubleshooting
 
-See [Architecture Overview](../architecture/overview.md) for:
+### 2. Reference Implementation Guides
 
-- Stack structure and construct dependencies
-- How constructs wire together
-- Configuration management via SSM
+Use these detailed guides as needed (referenced in the Microservice Development Guide):
 
-### 3. Implementation Workflow
+**Core Guides** (used in main workflow):
 
-Follow these guides in order:
+- **[Configuration Management](./configuration-management.md)** - Environment config, `.env` setup, validation
+- **[Environment Variables](./environment-variables.md)** - CDK vs Lambda contexts, best practices
+- **[Database Setup](./database-setup.md)** - DynamoDB tables (Faux-SQL vs Single-Table)
+- **[Data Access Layer](./data-access.md)** - DynamoDB operations, transforms
+- **[Adding Endpoints](./adding-endpoints.md)** - Lambda handlers, API Gateway
+- **[Testing](./testing.md)** - Unit, handler, CDK template, E2E tests
+- **[Deployment](./deployment.md)** - CDK deployment, environments
+- **[Monitoring & Observability](./monitoring.md)** - CloudWatch, alarms, SNS
 
-1. **[Data Access Layer](./data-access.md)** - Implement DynamoDB operations
-2. **[Adding Endpoints](./adding-endpoints.md)** - Create Lambda handlers and wire to API Gateway
-3. **[Using Constructs](./using-constructs.md)** - Leverage existing CDK constructs
-4. **[Testing](./testing.md)** - Unit and integration tests
-5. **[Deployment](./deployment.md)** - Deploy to AWS environments
+**Optional Guides** (use when needed):
+
+- **[Authentication & Authorization](./authentication.md)** - Cognito User Pool, Identity Pool
+- **[IAM Roles](./iam-roles.md)** - Role-based access control
+- **[OAuth Scopes](./permissions-oauth-scopes.md)** - Fine-grained API authorization
+- **[SSM Bindings](./ssm-bindings.md)** - Consuming configs from other services
+- **[SSM Publications](./ssm-publications.md)** - Publishing configs for other services
+
+**Reference**:
+
+- **[Using Constructs](./using-constructs.md)** - CDK construct patterns overview
+
+### 3. Track Your Progress
+
+- **[Guide Updates Tracker](./guide-updates-tracker.md)** - Track guide updates per resource
 
 ---
 
-## Implementation Guides
+## Key Concepts
 
-### Core Implementation
+### Construct-Based Architecture
 
-- **[Data Access Layer](./data-access.md)** - DynamoDB operations, entity modeling, access patterns
-- **[Adding Endpoints](./adding-endpoints.md)** - Lambda handlers, API Gateway integration, request/response handling
-- **[Using Constructs](./using-constructs.md)** - How to use Auth, Database, API, Monitor constructs
+- **Reusable** - Constructs can be used across services
+- **Composable** - Constructs wire together in the stack
+- **Testable** - Each construct can be tested independently
 
-### Supporting Topics
+### Configuration Management
 
-- **[Authentication & Authorization](./authentication.md)** - Using the Auth construct, Cognito integration
-- **[Monitoring & Observability](./monitoring.md)** - CloudWatch alarms, SNS notifications, logging
-- **[Testing](./testing.md)** - Unit tests, integration tests, DynamoDB Local
-- **[Deployment](./deployment.md)** - CDK deployment, environment configuration
+- **Layered approach** - Base defaults + environment overrides + runtime variables
+- **Type-safe** - TypeScript interfaces + Zod validation
+- **Environment-specific** - `.env` for local, config files for staging/production
+
+### Testing Strategy
+
+- **CDK Template Tests** - Validate infrastructure resources
+- **Unit Tests** - Test helpers and data access functions
+- **Handler Tests** - Test Lambda behavior with mocked AWS SDK
+- **Schema Tests** - Validate Zod schemas
+- **E2E Tests** - Test deployed API (optional, in CI/CD)
+
+See [Testing Strategy](../../../../docs/guides/testing/testing-strategy.md) for details.
 
 ---
 
@@ -98,75 +122,31 @@ svc-merchants/
 
 ---
 
-## Key Concepts
+## Quick Reference Commands
 
-### 1. Construct-Based Architecture
+```bash
+# Development
+npm run build          # Compile TypeScript
+npm run watch          # Watch mode for development
+npm run test           # Run all tests
+npm run test:unit      # Unit tests only
+npm run test:integration  # Integration tests only
 
-This service uses CDK constructs to encapsulate infrastructure:
+# CDK
+npm run synth          # Synthesize CloudFormation
+npm run diff           # Show changes to be deployed
+npm run deploy:dev     # Deploy to dev environment
+npm run deploy:staging # Deploy to staging
+npm run deploy:prod    # Deploy to production
 
-- **Reusable** - Constructs can be used across services
-- **Composable** - Constructs wire together in the stack
-- **Testable** - Each construct can be tested independently
+# DynamoDB Local
+npm run dynamodb:start # Start DynamoDB Local
+npm run dynamodb:stop  # Stop DynamoDB Local
 
-### 2. Configuration Management
-
-Configuration is managed via:
-
-- **Environment files** - `config/{env}.ts` for environment-specific settings
-- **SSM Parameters** - Service discovery and secrets management
-- **CDK Context** - Build-time configuration
-
-### 3. Service Discovery
-
-Services communicate via SSM Parameter Store:
-
-- **Bindings** - Read external service configs (e.g., Cognito User Pool ID)
-- **Publications** - Publish this service's configs for others to consume
-
-See [SSM Bindings Pattern](../../../../docs/guides/patterns/ssm-bindings.md) for details.
-
----
-
-## Development Workflow
-
-### Typical Story Implementation
-
-1. **Set up local environment**
-
-   ```bash
-   npm install
-   npm run build
-   ```
-
-2. **Implement data access layer**
-   - Create entity interfaces in `src/types/`
-   - Implement CRUD operations in `src/lib/data-access/`
-   - Write unit tests in `test/lib/data-access/`
-
-3. **Implement Lambda handlers**
-   - Create handler in `src/handlers/`
-   - Implement business logic
-   - Add validation and error handling
-   - Write handler tests in `test/handlers/`
-
-4. **Wire to API Gateway**
-   - Update `lib/api/construct.ts` to add endpoint
-   - Configure method, path, authorization
-   - Deploy and test
-
-5. **Add monitoring**
-   - Configure CloudWatch alarms in `lib/monitor/construct.ts`
-   - Set up SNS notifications for critical errors
-
-6. **Integration testing**
-   - Test with DynamoDB Local
-   - Test API Gateway integration
-   - Verify end-to-end flows
-
-7. **Deploy to dev environment**
-   ```bash
-   npm run deploy:dev
-   ```
+# Linting
+npm run lint           # Run ESLint
+npm run lint:fix       # Fix linting issues
+```
 
 ---
 

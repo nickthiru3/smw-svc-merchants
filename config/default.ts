@@ -6,6 +6,8 @@ import { z } from "zod";
 import localstackConfig from "./localstack";
 import stagingConfig from "./staging";
 import productionConfig from "./production";
+import type { IDatabaseConfig } from "./database";
+import { databaseConfig } from "./database";
 
 export interface IConfig {
   envName: string;
@@ -17,6 +19,9 @@ export interface IConfig {
     name: string;
     displayName: string;
   };
+
+  // Database configuration
+  database: IDatabaseConfig;
 
   // GitHub and CodeStar configuration
   github?: {
@@ -83,6 +88,15 @@ const ConfigSchema = z
     service: z.object({
       name: z.string().min(1),
       displayName: z.string().min(1),
+    }),
+    database: z.object({
+      approach: z.enum(["faux-sql", "single-table"]),
+      fauxSql: z.object({
+        tables: z.array(z.any()),
+      }),
+      singleTable: z.object({
+        tableName: z.string().optional(),
+      }),
     }),
     github: z
       .object({
@@ -238,6 +252,9 @@ const defaultConfig: IConfig = {
       process.env.SERVICE_NAME ||
       "Merchants Microservice",
   },
+
+  // Database configuration
+  database: databaseConfig,
 
   // Feature toggles
   features: {
