@@ -4,11 +4,39 @@
 
 ---
 
-## Overview
+## Table of Contents
+
+1. [Overview](#1-overview)
+   - 1.1. [Purpose](#11-purpose)
+   - 1.2. [Prerequisites](#12-prerequisites)
+2. [Implementation Steps](#2-implementation-steps)
+   - 2.1. [Review Your Data Model](#21-review-your-data-model)
+   - 2.2. [Create TypeScript Interfaces](#22-create-typescript-interfaces)
+   - 2.3. [Create Data Access Module](#23-create-data-access-module)
+     - 2.3.1. [Transform Functions](#231-transform-functions)
+     - 2.3.2. [CRUD Operations](#232-crud-operations)
+     - 2.3.3. [Query Operations (Access Patterns)](#233-query-operations-access-patterns)
+   - 2.4. [Create DynamoDB Client Utility](#24-create-dynamodb-client-utility)
+   - 2.5. [Write Unit Tests](#25-write-unit-tests)
+3. [Best Practices](#3-best-practices)
+   - 3.1. [Separation of Concerns](#31-separation-of-concerns)
+   - 3.2. [Error Handling](#32-error-handling)
+   - 3.3. [Performance](#33-performance)
+4. [Testing with DynamoDB Local](#4-testing-with-dynamodb-local)
+   - 4.1. [Setup](#41-setup)
+   - 4.2. [Configuration](#42-configuration)
+5. [Next Steps](#5-next-steps)
+6. [Story 001 Notes](#6-story-001-notes)
+
+---
+
+## 1. Overview
+
+### 1.1. Purpose
 
 This guide covers implementing the data access layer based on your DynamoDB data model designed in Phase 2 (Conceptual Design).
 
-**Prerequisites:**
+### 1.2. Prerequisites
 
 - ✅ Entity files created at `docs/project/specs/entities/[entity].md`
 - ✅ Access patterns documented
@@ -17,9 +45,9 @@ This guide covers implementing the data access layer based on your DynamoDB data
 
 ---
 
-## Implementation Steps
+## 2. Implementation Steps
 
-### 1. Review Your Data Model
+### 2.1. Review Your Data Model
 
 **Location**: `docs/project/specs/entities/[entity].md`
 
@@ -33,7 +61,7 @@ Your entity file should contain:
 
 ---
 
-### 2. Create TypeScript Interfaces
+### 2.2. Create TypeScript Interfaces
 
 **Location**: `src/types/[entity].ts`
 
@@ -113,9 +141,9 @@ export interface MerchantItem {
 
 ---
 
-### 3. Create Data Access Module
+### 2.3. Create Data Access Module
 
-**Location**: `src/lib/data-access/[entity].ts`
+**Location**: `src/data-access/[entity].ts`
 
 Implement:
 
@@ -123,10 +151,10 @@ Implement:
 - **CRUD operations** - Create, Read, Update, Delete
 - **Query operations** - Implement access patterns
 
-#### 3.1. Transform Functions
+#### 2.3.1. Transform Functions
 
 ```typescript
-// src/lib/data-access/merchants.ts
+// src/data-access/merchants.ts
 import { DynamoDBDocumentClient } from "@aws-sdk/lib-dynamodb";
 import type { Merchant, MerchantItem } from "#src/types/merchant";
 
@@ -182,7 +210,7 @@ export function fromItem(item: MerchantItem): Merchant {
 }
 ```
 
-#### 3.2. CRUD Operations
+#### 2.3.2. CRUD Operations
 
 ```typescript
 import {
@@ -306,7 +334,7 @@ export async function deleteMerchant(
 }
 ```
 
-#### 3.3. Query Operations (Access Patterns)
+#### 2.3.3. Query Operations (Access Patterns)
 
 ```typescript
 import { QueryCommand } from "@aws-sdk/lib-dynamodb";
@@ -371,11 +399,12 @@ export async function getMerchantsByStatus(
 
 ---
 
-### 4. Create DynamoDB Client Utility
+### 2.4. Create DynamoDB Client Utility
 
-**Location**: `src/lib/utils/dynamodb.ts`
+**Location**: `src/helpers/ddb.ts`
 
 ```typescript
+// src/helpers/ddb.ts
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
 import { DynamoDBDocumentClient } from "@aws-sdk/lib-dynamodb";
 
@@ -412,21 +441,23 @@ export function getDocumentClient(): DynamoDBDocumentClient {
 
 ---
 
-### 5. Write Unit Tests
+### 2.5. Write Unit Tests
 
-**Location**: `test/lib/data-access/merchants.test.ts`
+**Location**: `test/data-access/[entity].test.ts`
+
+**Example**: `test/data-access/merchants.test.ts`
 
 ```typescript
 import { describe, it, expect, beforeAll, afterAll } from "@jest/globals";
 import { DynamoDBDocumentClient } from "@aws-sdk/lib-dynamodb";
-import { createDynamoDBClient } from "#src/lib/utils/dynamodb";
+import { createDynamoDBClient } from "#src/helpers/ddb";
 import {
   createMerchant,
   getMerchantById,
   updateMerchant,
   deleteMerchant,
   getMerchantsByCategory,
-} from "#src/lib/data-access/merchants";
+} from "#src/data-access/merchants";
 import { MerchantStatus } from "#src/types/merchant";
 
 describe("Merchant Data Access", () => {
@@ -530,9 +561,9 @@ describe("Merchant Data Access", () => {
 
 ---
 
-## Best Practices
+## 3. Best Practices
 
-### Separation of Concerns
+### 3.1. Separation of Concerns
 
 ✅ **Keep DynamoDB details isolated**
 
@@ -556,7 +587,7 @@ function processMerchant(merchant: Merchant) {
 }
 ```
 
-### Error Handling
+### 3.2. Error Handling
 
 ✅ **Handle DynamoDB errors gracefully**
 
@@ -573,7 +604,7 @@ try {
 }
 ```
 
-### Performance
+### 3.3. Performance
 
 ✅ **Use batch operations when possible**
 
@@ -619,9 +650,9 @@ export async function getAllMerchantsByCategory(
 
 ---
 
-## Testing with DynamoDB Local
+## 4. Testing with DynamoDB Local
 
-### Setup
+### 4.1. Setup
 
 1. **Start DynamoDB Local**:
 
@@ -640,7 +671,7 @@ export async function getAllMerchantsByCategory(
    npm test
    ```
 
-### Configuration
+### 4.2. Configuration
 
 Set environment variables for testing:
 
@@ -652,7 +683,7 @@ export AWS_REGION=us-east-1
 
 ---
 
-## Next Steps
+## 5. Next Steps
 
 Once data access layer is complete:
 
@@ -662,7 +693,7 @@ Once data access layer is complete:
 
 ---
 
-## Story 001 Notes
+## 6. Story 001 Notes
 
 **Implementation decisions for Story 001**:
 

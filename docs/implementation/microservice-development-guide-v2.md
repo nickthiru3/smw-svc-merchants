@@ -13,22 +13,19 @@
    - 1.2. [When to Use This Guide](#12-when-to-use-this-guide)
    - 1.3. [How This Guide Relates to Other Docs](#13-how-this-guide-relates-to-other-docs)
 2. [Core Principles](#2-core-principles)
-   - 2.1. [Treat All Guides as Placeholders](#21-treat-all-guides-as-placeholders)
-   - 2.2. [Generic vs App-Specific Documentation](#22-generic-vs-app-specific-documentation)
-   - 2.3. [Bottom-Up Implementation Approach](#23-bottom-up-implementation-approach)
-   - 2.4. [Test-Driven Development](#24-test-driven-development)
+   - 2.1. [Generic vs App-Specific Documentation](#21-generic-vs-app-specific-documentation)
+   - 2.2. [Bottom-Up Implementation Approach](#22-bottom-up-implementation-approach)
+   - 2.3. [Testing Strategy](#23-testing-strategy)
 3. [Development Workflow](#3-development-workflow)
-   - 3.1. [Step 0: Bootstrap from Template](#31-step-0-bootstrap-from-template)
-   - 3.2. [Step 1: Review Story Artifacts](#32-step-1-review-story-artifacts)
-   - 3.3. [Step 2: Configure Service](#33-step-2-configure-service)
-   - 3.4. [Step 3: Configure Database Tables](#34-step-3-configure-database-tables)
-   - 3.5. [Step 4: Implement Lambda Handlers & Data Access](#35-step-4-implement-lambda-handlers--data-access)
-   - 3.6. [Step 5: Wire to API Gateway](#36-step-5-wire-to-api-gateway)
-   - 3.7. [Step 6: Run All Tests Locally](#37-step-6-run-all-tests-locally)
-   - 3.8. [Step 7: Deploy to Dev Environment](#38-step-7-deploy-to-dev-environment)
-   - 3.9. [Step 8: E2E Testing (Optional)](#39-step-8-e2e-testing-optional)
-   - 3.10. [Step 9: Add Monitoring](#310-step-9-add-monitoring)
-   - 3.11. [Step 10: Document & Track](#311-step-10-document--track)
+   - 3.1. [Step 1: Configure Service](#31-step-1-configure-service)
+   - 3.2. [Step 2: Configure Database Tables](#32-step-2-configure-database-tables)
+   - 3.3. [Step 3: Implement Data Access Layer](#33-step-3-implement-data-access-layer)
+   - 3.4. [Step 4: Implement Lambda Handlers](#34-step-4-implement-lambda-handlers)
+   - 3.5. [Step 5: Wire to API Gateway](#35-step-5-wire-to-api-gateway)
+   - 3.6. [Step 6: Run All Tests Locally](#36-step-6-run-all-tests-locally)
+   - 3.7. [Step 7: Deploy to Dev Environment](#37-step-7-deploy-to-dev-environment)
+   - 3.8. [Step 8: E2E Testing (Optional)](#38-step-8-e2e-testing-optional)
+   - 3.9. [Step 9: Add Monitoring](#39-step-9-add-monitoring)
 4. [Optional & Advanced Constructs](#4-optional--advanced-constructs)
    - 4.1. [Overview](#41-overview)
    - 4.2. [Authentication & Authorization](#42-authentication--authorization)
@@ -36,23 +33,21 @@
    - 4.4. [Event-Driven Architecture (Future)](#44-event-driven-architecture-future)
    - 4.5. [Feature Flags](#45-feature-flags)
    - 4.6. [Summary: When to Use Each Construct](#46-summary-when-to-use-each-construct)
-5. [Workflow Per Resource](#5-workflow-per-resource)
-6. [Testing Strategy](#6-testing-strategy)
-7. [Artifacts Reference](#7-artifacts-reference)
-8. [Time Estimates](#8-time-estimates)
-9. [Success Criteria](#9-success-criteria)
-10. [Best Practices](#10-best-practices)
-11. [Troubleshooting](#11-troubleshooting)
+5. [Artifacts Reference](#5-artifacts-reference)
+6. [Time Estimates](#6-time-estimates)
+7. [Success Criteria](#7-success-criteria)
+8. [Best Practices](#8-best-practices)
+9. [Troubleshooting](#9-troubleshooting)
 
 ---
 
 ## 1. Overview
 
-### 1.1. Purpose {#11-purpose}
+### 1.1. Purpose
 
 This guide provides a **comprehensive, step-by-step workflow** for implementing backend features in a microservice after completing Phase 1-3 of the Design & Development Methodology.
 
-### 1.2. When to Use This Guide {#12-when-to-use-this-guide}
+### 1.2. When to Use This Guide
 
 **You should be here if**:
 
@@ -66,7 +61,7 @@ This guide provides a **comprehensive, step-by-step workflow** for implementing 
 
 - [Design & Development Methodology](../../../../docs/guides/design-and-development/design-and-development-methodology-v3.md)
 
-### 1.3. How This Guide Relates to Other Docs {#13-how-this-guide-relates-to-other-docs}
+### 1.3. How This Guide Relates to Other Docs
 
 ```
 Design & Development Methodology (Phase 1-3)
@@ -91,18 +86,7 @@ Implementation Guides (detailed topics)
 
 ## 2. Core Principles
 
-### 2.1. Treat All Guides as Placeholders {#21-treat-all-guides-as-placeholders}
-
-**Rationale**: Even detailed guides should be validated against actual implementation.
-
-**Approach**:
-
-- Implement following the opinionated microservice template patterns
-- Let implementation inform documentation, not the other way around
-- Validate guide content against working code
-- Update guides to reflect actual patterns used
-
-### 2.2. Generic vs App-Specific Documentation {#22-generic-vs-app-specific-documentation}
+### 2.1. Generic vs App-Specific Documentation
 
 **Generic Documentation** (Implementation Guides):
 
@@ -124,7 +108,7 @@ Implementation Guides (detailed topics)
 **Location**: Inline code comments, JSDoc  
 **Purpose**: Preserve context without cluttering guides
 
-### 2.3. Bottom-Up Implementation Approach {#23-bottom-up-implementation-approach}
+### 2.2. Bottom-Up Implementation Approach
 
 **Order**: Data Layer → Business Logic → API → Monitoring → Testing → Deployment
 
@@ -135,137 +119,84 @@ Implementation Guides (detailed topics)
 - ✅ **API Gateway is thin** - Just proxies to Lambda
 - ✅ **Testing throughout** - Unit tests alongside code, E2E after full stack
 
-### 2.4. Test-Driven Development {#24-test-driven-development}
+### 2.3. Testing Strategy
 
-**Write tests after each step**, not at the end:
+**Write tests after each implementation step**, not at the end of the story.
 
-- CDK template tests after infrastructure changes
-- Unit tests for data access helpers
-- Handler tests with mocked AWS SDK
-- E2E tests against deployed API
+**See**: [Testing Strategy](../testing/testing-strategy.md) for comprehensive testing guide
+
+#### Test Layers
+
+| Test Type        | When                 | Guide                                                            |
+| ---------------- | -------------------- | ---------------------------------------------------------------- |
+| **CDK Template** | After infrastructure | [CDK Template Testing](../testing/cdk-template-testing-guide.md) |
+| **Unit**         | After helpers        | [Unit Testing](../testing/unit-helpers-testing-guide.md)         |
+| **Handler**      | After Lambda         | [Handler Testing](../testing/handler-testing-guide.md)           |
+| **Schema**       | After validation     | [Schema Testing](../testing/schema-testing-guide.md)             |
+| **E2E**          | After deployment     | [E2E Testing](../testing/e2e-testing-guide.md)                   |
+
+**Key Points**:
+
+- ✅ **CDK template tests** after infrastructure changes (Step 2, 5)
+- ✅ **Unit tests** for data access layer (Step 3)
+- ✅ **Handler tests** with mocked dependencies (Step 4)
+- ✅ **Schema tests** for request/response validation (Step 4)
+- ✅ **E2E tests** against deployed API (Step 8, optional)
 
 ---
 
 ## 3. Development Workflow
 
-### 3.1. Step 0: Bootstrap from Template
+> **Note**: For bootstrapping a new microservice from the template, see the [README](../../README.md#getting-started) for setup instructions.
 
-**When**: Starting a new microservice from the template project
-
-**Tasks**:
-
-1. **Clone microservice template**
-2. **Update `package.json` metadata**:
-   ```json
-   {
-     "name": "your-service-name",
-     "version": "0.1.0"
-   }
-   ```
-3. **Copy `.env.example` to `.env`**: `cp .env.example .env`
-4. **Update `.env` with your values**
-5. **Install dependencies**: `npm install`
-6. **Verify setup**: `npm run build && npm test`
-
-**See**:
-
-- [Configuration Management Guide](./configuration-management.md) - Detailed `.env` setup and config files
-- [Environment Variables Guide](./environment-variables.md) - Understanding CDK vs Lambda contexts
-
----
-
-### 3.2. Step 1: Review Story Artifacts
-
-**Purpose**: Understand what to build before writing code
-
-**Artifacts**:
-
-- **Story Card**: Acceptance criteria, scope
-- **UI Mockups**: Frontend context
-- **Data Model**: Entities, access patterns
-- **Sequence Diagram**: Flow, interactions
-- **Actions & Queries**: CQS separation
-- **OpenAPI Spec**: API contract
-
-**Location**: `docs/project/specs/stories/[actor]/[story]/`
-
----
-
-### 3.3. Step 2: Configure Service
+### 3.1. Step 1: Configure Service
 
 **Purpose**: Set up environment-specific configuration
 
-**Tasks**:
+**Guides**:
 
-- Verify `.env` has correct values
-- Update environment-specific overrides (if needed)
-- Understand how config flows through the system
-
-**See**:
-
-- [Configuration Management Guide](./configuration-management.md) - Config files and environment overrides
-- [Environment Variables Guide](./environment-variables.md) - "Two Worlds" concept (already covered in Step 0)
+- [Configuration Management Guide](./configuration-management.md)
+- [Environment Variables Guide](./environment-variables.md)
 
 ---
 
-### 3.4. Step 3: Configure Database Tables
+### 3.2. Step 2: Configure Database Tables
 
 **Purpose**: Define DynamoDB tables based on Phase 2 data model
 
-**Guide**: [Database Setup](./database-setup.md)
+**Guides**:
 
-**Implementation**:
-
-1. Open `config/database.ts`
-2. Choose Faux-SQL or Single-Table approach
-3. Define table(s) with generic GSI names (`GSI1`, `GSI1PK`)
-
-**Testing**: Write CDK template tests
-
-- Test table creation, keys, GSIs, PITR
-
-**Verify**: `npm run synth && npm test`
+- [Database Setup](./database-setup.md)
 
 ---
 
-### 3.5. Step 4: Implement Lambda Handlers & Data Access
+### 3.3. Step 3: Implement Data Access Layer
 
-**Purpose**: Implement business logic and data access layer
+**Purpose**: Create the data access layer for DynamoDB operations
 
-**Guides**: [Adding Endpoints](./adding-endpoints.md) | [Data Access Layer](./data-access.md)
+**Guides**:
 
-**Implementation**:
+- [Data Access Layer](./data-access.md)
 
-1. **Create entity interfaces** in `src/types/entities/`
-2. **Implement data access layer** in `src/lib/data-access/`
-3. **Create Lambda handlers** in `src/handlers/[endpoint]/`
+### 3.4. Step 4: Implement Lambda Handlers
 
-**Testing**: Write unit, handler, and schema tests
+**Purpose**: Implement business logic in Lambda handlers
 
-**Verify**: `npm test`
+**Guides**:
 
----
+- [Adding Endpoints](./adding-endpoints.md)
 
-### 3.6. Step 5: Wire to API Gateway
+### 3.5. Step 5: Wire to API Gateway
 
 **Purpose**: Connect Lambda handlers to API Gateway
 
-**Guide**: [Adding Endpoints](./adding-endpoints.md)
+**Guides**:
 
-**Implementation**:
-
-1. Create endpoint construct
-2. Configure Lambda function
-3. Grant IAM permissions
-4. Wire to API Gateway
-
-**Testing**: Update CDK template tests
-
-**Verify**: `npm run synth && npm test`
+- [Adding Endpoints](./adding-endpoints.md)
 
 ---
 
-### 3.7. Step 6: Run All Tests Locally
+### 3.6. Step 6: Run All Tests Locally
 
 **Purpose**: Verify everything works before deploying
 
@@ -275,7 +206,7 @@ Implementation Guides (detailed topics)
 
 ---
 
-### 3.8. Step 7: Deploy to Dev Environment
+### 3.7. Step 7: Deploy to Dev Environment
 
 **Purpose**: Deploy to AWS for integration testing
 
@@ -290,7 +221,7 @@ Implementation Guides (detailed topics)
 
 ---
 
-### 3.9. Step 8: E2E Testing (Optional)
+### 3.8. Step 8: E2E Testing (Optional)
 
 **Purpose**: Test against deployed API
 
@@ -300,7 +231,7 @@ Implementation Guides (detailed topics)
 
 ---
 
-### 3.10. Step 9: Add Monitoring
+### 3.9. Step 9: Add Monitoring
 
 **Purpose**: Set up observability
 
@@ -311,18 +242,6 @@ Implementation Guides (detailed topics)
 - Add structured logging
 
 **See**: [Monitoring Guide](./monitoring.md)
-
----
-
-### 3.11. Step 10: Document & Track
-
-**Purpose**: Keep documentation up to date
-
-**Tasks**:
-
-- Update [Guide Updates Tracker](./guide-updates-tracker.md)
-- Document patterns discovered
-- Update relevant guides
 
 ---
 
@@ -639,35 +558,7 @@ const permissions: IPermissionsProvider = config.features?.permissionsEnabled
 
 ---
 
-## 5. Workflow Per Resource
-
-For each resource, follow this 5-step process:
-
-1. **Implement** - Follow template patterns, write tests
-2. **Document** - Record decisions and challenges
-3. **Analyze** - Compare with guides, note deviations
-4. **Discuss** - Provide feedback and suggestions
-5. **Update** - Make generic updates to guides
-
----
-
-## 6. Testing Strategy
-
-### Test Layers
-
-| Test Type        | When                 | Guide                                                                                 |
-| ---------------- | -------------------- | ------------------------------------------------------------------------------------- |
-| **CDK Template** | After infrastructure | [CDK Template Testing](../../../../docs/guides/testing/cdk-template-testing-guide.md) |
-| **Unit**         | After helpers        | [Unit Testing](../../../../docs/guides/testing/unit-helpers-testing-guide.md)         |
-| **Handler**      | After Lambda         | [Handler Testing](../../../../docs/guides/testing/handler-testing-guide.md)           |
-| **Schema**       | After validation     | [Schema Testing](../../../../docs/guides/testing/schema-testing-guide.md)             |
-| **E2E**          | After deployment     | [E2E Testing](../../../../docs/guides/testing/e2e-testing-guide.md)                   |
-
-**See**: [Testing Strategy](../../../../docs/guides/testing/testing-strategy.md)
-
----
-
-## 7. Artifacts Reference
+## 5. Artifacts Reference
 
 | Artifact          | Purpose                   | Location                                                            |
 | ----------------- | ------------------------- | ------------------------------------------------------------------- |
@@ -713,7 +604,7 @@ For each resource, follow this 5-step process:
 
 ---
 
-## 10. Best Practices
+## 8. Best Practices
 
 ### Configuration
 

@@ -6,14 +6,13 @@
 
 ## Overview
 
-This guide covers implementing API endpoints based on your OpenAPI specification from Phase 3 (API Design & Contracts).
+This guide covers implementing API endpoints based on your OpenAPI specification from Phase 3 (API Design & Contracts) and other related artifacts (see Prerequites below).
 
 **Prerequisites:**
 
-- ✅ API specification at `docs/project/specs/stories/[story]/api.yml`
-- ✅ Actions & Queries document (CQS separation)
 - ✅ Data access layer implemented
-- ✅ Sequence diagrams showing request/response flows
+- ✅ API specification at `docs/project/specs/api/openapi.yaml`
+- ✅ Actions & Queries artifact at `docs/project/specs/stories/[actor]/[story]/actions-queries.md`
 
 ---
 
@@ -21,7 +20,7 @@ This guide covers implementing API endpoints based on your OpenAPI specification
 
 ### 1. Review API Specification
 
-**Location**: `docs/project/specs/stories/[actor]/[story-name]/api.yml`
+**Location**: `docs/project/specs/api/openapi.yaml`
 
 Your OpenAPI spec defines:
 

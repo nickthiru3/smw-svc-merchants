@@ -27,320 +27,238 @@ jest.mock("aws-cdk-lib/aws-lambda-nodejs", () => {
 import * as cdk from "aws-cdk-lib";
 import { Template, Match } from "aws-cdk-lib/assertions";
 import { ServiceStack } from "#lib/service-stack";
-import type { IConfig } from "#config/default";
+import config from "#config/default";
 
+/**
+ * ServiceStack Infrastructure Tests
+ *
+ * Tests CDK template synthesis for the Merchants microservice.
+ * Validates DynamoDB table configuration for Story 001: Browse Providers by Waste Category.
+ *
+ * Uses the actual application config from config/default.ts to ensure tests
+ * validate the real configuration that will be deployed.
+ *
+ * Story 001 Requirements:
+ * - Merchants table with MerchantId partition key
+ * - GSI1 for category-based queries (GSI1PK = PrimaryCategory)
+ * - Point-in-time recovery enabled
+ * - Environment-based deletion protection
+ *
+ * @see docs/project/specs/stories/consumers/browse-providers-by-waste-category
+ * @see docs/project/specs/entities/merchants.md
+ */
 describe("ServiceStack (infrastructure)", () => {
   let app: cdk.App;
   let stack: ServiceStack;
 
-  const envName = "dev";
-  const account = "123456789012";
-  const region = "us-east-1";
-  const serviceName = "users";
-
-  const config: IConfig = {
-    envName,
-    accountId: account,
-    region,
-    service: {
-      name: serviceName,
-      displayName: serviceName,
-    },
-    resources: {
-      tablePrefix: serviceName,
-      bucketPrefix: serviceName,
-      functionPrefix: serviceName,
-      apiPrefix: serviceName,
-    },
-    // Keep optional sections minimal for synth
-    features: { permissionsEnabled: false },
-  } as IConfig;
+  // Use actual config values
+  const envName = config.envName;
+  const account = config.accountId;
+  const region = config.region;
+  const serviceName = config.service.name;
 
   beforeEach(() => {
     app = new cdk.App();
     stack = new ServiceStack(app, `${envName}-${serviceName}-ServiceStack`, {
       env: { account, region },
-      config,
+      config, // Use actual config object
     });
   });
 
-  test("configures monitor Lambda with SLACK_WEBHOOK_URL env using SSM SecureString dynamic reference", () => {
-    const template = Template.fromStack(stack);
-
-    template.hasResourceProperties("AWS::Lambda::Function", Match.objectLike({
-      Environment: Match.objectLike({
-        Variables: Match.objectLike({
-          // Expect a CloudFormation dynamic reference to SSM SecureString
-          SLACK_WEBHOOK_URL: Match.stringLikeRegexp("ssm-secure:.*monitor/slack/webhookUrl"),
-        }),
-      }),
-    }));
-  });
-
-  test("synthesizes an API Gateway RestApi with custom Stage and access logs", () => {
-    const template = Template.fromStack(stack);
-
-    // RestApi exists
-    template.resourceCountIs("AWS::ApiGateway::RestApi", 1);
-
-    // Deployment + Stage exist
-    template.resourceCountIs("AWS::ApiGateway::Deployment", 1);
-    template.hasResourceProperties("AWS::ApiGateway::Stage", {
-      StageName: envName,
-      MethodSettings: Match.arrayWith([
-        Match.objectLike({
-          HttpMethod: "*",
-          ResourcePath: "/*",
-          LoggingLevel: "INFO",
-          MetricsEnabled: true,
-          DataTraceEnabled: true,
-          ThrottlingBurstLimit: 10,
-          ThrottlingRateLimit: 5,
-        }),
-      ]),
+  /**
+   * Configuration Validation
+   *
+   * Validates that the application config is correctly set up for Story 001.
+   */
+  describe("Configuration", () => {
+    test("uses Faux-SQL database approach", () => {
+      expect(config.database.approach).toBe("faux-sql");
     });
 
-    // Access logs LogGroup with expected name and retention
-    template.hasResourceProperties("AWS::Logs::LogGroup", Match.objectLike({
-      LogGroupName: `/apigateway/${serviceName}/${envName}/access`,
-      RetentionInDays: 30,
-    }));
-  });
+    test("defines Merchants table in config", () => {
+      const merchantsTable = config.database.fauxSql.tables.find(
+        (table) => table.tableName === "Merchants"
+      );
 
-  test("configures validation GatewayResponse, RequestValidator and Model for POST /users", () => {
-    const template = Template.fromStack(stack);
-
-    // GatewayResponse for BAD_REQUEST_BODY
-    template.hasResourceProperties("AWS::ApiGateway::GatewayResponse", {
-      ResponseType: "BAD_REQUEST_BODY",
-      ResponseParameters: Match.objectLike({
-        "gatewayresponse.header.Access-Control-Allow-Origin": "'*'",
-        "gatewayresponse.header.Access-Control-Allow-Headers": "'*'",
-      }),
-      StatusCode: "400",
+      expect(merchantsTable).toBeDefined();
+      expect(merchantsTable?.partitionKey.name).toBe("MerchantId");
     });
 
-    // RequestValidator validates body
-    template.hasResourceProperties("AWS::ApiGateway::RequestValidator", {
-      ValidateRequestBody: true,
-    });
+    test("configures GSI1 for category queries in config", () => {
+      const merchantsTable = config.database.fauxSql.tables.find(
+        (table) => table.tableName === "Merchants"
+      );
 
-    // Request Model exists for application/json
-    template.hasResourceProperties("AWS::ApiGateway::Model", {
-      ContentType: "application/json",
+      const gsi1 = merchantsTable?.globalSecondaryIndexes?.find(
+        (gsi) => gsi.indexName === "GSI1"
+      );
+
+      expect(gsi1).toBeDefined();
+      expect(gsi1?.partitionKey.name).toBe("GSI1PK");
     });
   });
 
-  test("exposes POST /users method with request model (no authorizer for sign-up)", () => {
-    const template = Template.fromStack(stack);
+  /**
+   * Database Tests - Story 001: Browse Providers by Waste Category
+   *
+   * Tests DynamoDB table configuration for the Merchants entity using Faux-SQL approach.
+   *
+   * Requirements:
+   * - Merchants table with descriptive partition key (MerchantId)
+   * - GSI1 for category queries (GSI1PK = PrimaryCategory)
+   * - Point-in-time recovery enabled
+   * - Environment-based deletion protection
+   * - CloudFormation outputs for table name and ARN
+   */
+  describe("Database - Merchants Table (Faux-SQL)", () => {
+    test("creates Merchants table with MerchantId partition key", () => {
+      const template = Template.fromStack(stack);
 
-    // Method for POST exists with request models but no authorizer (public endpoint)
-    template.hasResourceProperties("AWS::ApiGateway::Method", Match.objectLike({
-      HttpMethod: "POST",
-      AuthorizationType: "NONE", // Sign-up is public
-      RequestValidatorId: Match.anyValue(),
-      RequestModels: Match.objectLike({
-        "application/json": Match.anyValue(),
-      }),
-      Integration: Match.objectLike({
-        Type: "AWS_PROXY",
-      }),
-    }));
-  });
+      // Merchants table should exist
+      template.resourceCountIs("AWS::DynamoDB::GlobalTable", 1);
 
-  test("exposes GET /.well-known/bindings method (public, no auth)", () => {
-    const template = Template.fromStack(stack);
-
-    // Should have a GET method for bindings endpoint
-    const methods = template.findResources("AWS::ApiGateway::Method", {
-      Properties: {
-        HttpMethod: "GET",
-        AuthorizationType: "NONE",
-      },
+      // Table should have MerchantId as partition key (no sort key)
+      template.hasResourceProperties("AWS::DynamoDB::GlobalTable", {
+        KeySchema: [{ AttributeName: "MerchantId", KeyType: "HASH" }],
+        AttributeDefinitions: Match.arrayWith([
+          { AttributeName: "MerchantId", AttributeType: "S" },
+        ]),
+      });
     });
 
-    expect(Object.keys(methods).length).toBeGreaterThanOrEqual(1);
-  });
+    test("configures GSI1 for category-based queries", () => {
+      const template = Template.fromStack(stack);
 
-  test("creates Lambda for CreateUser with Cognito and DynamoDB env vars", () => {
-    const template = Template.fromStack(stack);
-
-    // Lambda function with required environment variables
-    template.hasResourceProperties("AWS::Lambda::Function", Match.objectLike({
-      Runtime: "nodejs20.x",
-      MemorySize: 512,
-      Timeout: 60,
-      Environment: Match.objectLike({
-        Variables: Match.objectLike({
-          USER_POOL_ID: Match.anyValue(),
-          USER_POOL_CLIENT_ID: Match.anyValue(),
-          TABLE_NAME: Match.anyValue(),
-        }),
-      }),
-    }));
-  });
-
-  test("creates IAM policies for Lambda to access Cognito and DynamoDB", () => {
-    const template = Template.fromStack(stack);
-
-    // Policy allowing Cognito SignUp operation
-    template.hasResourceProperties("AWS::IAM::Policy", Match.objectLike({
-      PolicyDocument: Match.objectLike({
-        Statement: Match.arrayWith([
+      // GSI1 should exist with GSI1PK partition key (no sort key)
+      template.hasResourceProperties("AWS::DynamoDB::GlobalTable", {
+        GlobalSecondaryIndexes: [
           Match.objectLike({
-            Action: "cognito-idp:SignUp",
-            Effect: "Allow",
+            IndexName: "GSI1",
+            KeySchema: [{ AttributeName: "GSI1PK", KeyType: "HASH" }],
+            Projection: {
+              ProjectionType: "ALL",
+            },
+          }),
+        ],
+        AttributeDefinitions: Match.arrayWith([
+          { AttributeName: "GSI1PK", AttributeType: "S" },
+        ]),
+      });
+    });
+
+    test("enables point-in-time recovery for data protection", () => {
+      const template = Template.fromStack(stack);
+
+      // PITR should be enabled
+      template.hasResourceProperties("AWS::DynamoDB::GlobalTable", {
+        Replicas: Match.arrayWith([
+          Match.objectLike({
+            PointInTimeRecoverySpecification: {
+              PointInTimeRecoveryEnabled: true,
+            },
           }),
         ]),
-      }),
-    }));
+      });
+    });
 
-    // Policy allowing Cognito AdminAddUserToGroup operation
-    template.hasResourceProperties("AWS::IAM::Policy", Match.objectLike({
-      PolicyDocument: Match.objectLike({
-        Statement: Match.arrayWith([
+    test("disables deletion protection for dev environment", () => {
+      const template = Template.fromStack(stack);
+
+      // Dev environment should NOT have deletion protection
+      // (allows easy cleanup during development)
+      template.hasResourceProperties("AWS::DynamoDB::GlobalTable", {
+        Replicas: Match.arrayWith([
           Match.objectLike({
-            Action: "cognito-idp:AdminAddUserToGroup",
-            Effect: "Allow",
+            DeletionProtectionEnabled: false,
           }),
         ]),
-      }),
-    }));
+      });
+    });
 
-    // Policy allowing DynamoDB PutItem
-    template.hasResourceProperties("AWS::IAM::Policy", Match.objectLike({
-      PolicyDocument: Match.objectLike({
-        Statement: Match.arrayWith([
-          Match.objectLike({
-            Action: "dynamodb:PutItem",
-            Effect: "Allow",
-          }),
+    test("exports Merchants table name for Lambda environment variables", () => {
+      const template = Template.fromStack(stack);
+
+      const templateJson = template.toJSON();
+      const outputs = Object.values(templateJson.Outputs ?? {}) as Array<{
+        readonly Export?: { readonly Name?: string };
+        readonly Value?: any;
+      }>;
+
+      // Find Merchants table name export
+      const merchantsTableExport = outputs.find(
+        (output) => output.Export?.Name === `${serviceName}-Merchants-TableName`
+      );
+
+      expect(merchantsTableExport).toBeDefined();
+      // Value is a CloudFormation reference, just verify it exists
+      expect(merchantsTableExport?.Value).toBeDefined();
+    });
+
+    test("exports Merchants table ARN for IAM policies", () => {
+      const template = Template.fromStack(stack);
+
+      const templateJson = template.toJSON();
+      const outputs = Object.values(templateJson.Outputs ?? {}) as Array<{
+        readonly Export?: { readonly Name?: string };
+      }>;
+
+      // Find Merchants table ARN export
+      const merchantsTableArnExport = outputs.find(
+        (output) => output.Export?.Name === `${serviceName}-Merchants-TableArn`
+      );
+
+      expect(merchantsTableArnExport).toBeDefined();
+    });
+
+    test("uses correct table naming convention", () => {
+      const template = Template.fromStack(stack);
+
+      // Table name should follow pattern: {serviceName}-{tableName}
+      template.hasResourceProperties("AWS::DynamoDB::GlobalTable", {
+        TableName: `${serviceName}-Merchants`,
+      });
+    });
+  });
+
+  /**
+   * Database Approach Validation
+   *
+   * Ensures the correct database approach (Faux-SQL) is being used.
+   */
+  describe("Database Approach", () => {
+    test("uses Faux-SQL approach with descriptive key names", () => {
+      const template = Template.fromStack(stack);
+
+      // Should have descriptive keys (MerchantId, GSI1PK)
+      // NOT generic keys (PK, SK, GSI1PK, GSI1SK)
+      template.hasResourceProperties("AWS::DynamoDB::GlobalTable", {
+        AttributeDefinitions: Match.arrayWith([
+          { AttributeName: "MerchantId", AttributeType: "S" },
+          { AttributeName: "GSI1PK", AttributeType: "S" },
         ]),
-      }),
-    }));
-  });
+      });
 
-  test("creates Cognito User Pool with custom attributes and groups", () => {
-    const template = Template.fromStack(stack);
+      // Should NOT have generic PK/SK keys
+      const templateJson = template.toJSON();
+      const tables = Object.values(templateJson.Resources ?? {}).filter(
+        (resource: any) => resource.Type === "AWS::DynamoDB::GlobalTable"
+      );
 
-    // User Pool exists
-    template.resourceCountIs("AWS::Cognito::UserPool", 1);
-
-    // User Pool has custom userType attribute
-    template.hasResourceProperties("AWS::Cognito::UserPool", Match.objectLike({
-      Schema: Match.arrayWith([
-        Match.objectLike({
-          Name: "userType",
-          AttributeDataType: "String",
-          Mutable: false,
-        }),
-      ]),
-    }));
-
-    // User Pool Client exists
-    template.resourceCountIs("AWS::Cognito::UserPoolClient", 1);
-
-    // User groups exist (merchant, customer, admin)
-    template.resourceCountIs("AWS::Cognito::UserPoolGroup", 3);
-    template.hasResourceProperties("AWS::Cognito::UserPoolGroup", {
-      GroupName: "merchant",
+      tables.forEach((table: any) => {
+        const attrNames = table.Properties.AttributeDefinitions.map(
+          (attr: any) => attr.AttributeName
+        );
+        expect(attrNames).not.toContain("PK");
+        expect(attrNames).not.toContain("SK");
+      });
     });
-    template.hasResourceProperties("AWS::Cognito::UserPoolGroup", {
-      GroupName: "customer",
+
+    test("creates exactly one table for Merchants entity", () => {
+      const template = Template.fromStack(stack);
+
+      // Faux-SQL approach: one table per entity
+      // Story 001 only requires Merchants table
+      template.resourceCountIs("AWS::DynamoDB::GlobalTable", 1);
     });
-    template.hasResourceProperties("AWS::Cognito::UserPoolGroup", {
-      GroupName: "admin",
-    });
-  });
-
-  test("configures Cognito triggers for custom messages and post-confirmation", () => {
-    const template = Template.fromStack(stack);
-
-    // User Pool should have Lambda triggers configured
-    template.hasResourceProperties("AWS::Cognito::UserPool", Match.objectLike({
-      LambdaConfig: Match.objectLike({
-        CustomMessage: Match.anyValue(),
-        PostConfirmation: Match.anyValue(),
-      }),
-    }));
-
-    // Lambda functions for triggers should exist
-    const lambdas = template.findResources("AWS::Lambda::Function");
-    const lambdaKeys = Object.keys(lambdas);
-
-    // Should have custom message and post-confirmation lambdas
-    expect(lambdaKeys.length).toBeGreaterThanOrEqual(4); // At least: CreateUser, CustomMessage, PostConfirmation, Bindings
-  });
-
-  test("creates SES email template for merchant welcome email", () => {
-    const template = Template.fromStack(stack);
-
-    // SES email template should exist (currently only merchant template is created)
-    template.resourceCountIs("AWS::SES::Template", 1);
-  });
-
-  test("creates DynamoDB table with PK/SK, GSI1 and PITR", () => {
-    const template = Template.fromStack(stack);
-
-    template.hasResourceProperties("AWS::DynamoDB::GlobalTable", Match.objectLike({
-      KeySchema: Match.arrayWith([
-        Match.objectLike({ AttributeName: "PK", KeyType: "HASH" }),
-        Match.objectLike({ AttributeName: "SK", KeyType: "RANGE" }),
-      ]),
-      AttributeDefinitions: Match.arrayWith([
-        Match.objectLike({ AttributeName: "PK", AttributeType: "S" }),
-        Match.objectLike({ AttributeName: "SK", AttributeType: "S" }),
-      ]),
-      Replicas: Match.arrayWith([
-        Match.objectLike({
-          PointInTimeRecoverySpecification: Match.objectLike({
-            PointInTimeRecoveryEnabled: true,
-          }),
-        }),
-      ]),
-      GlobalSecondaryIndexes: Match.arrayWith([
-        Match.objectLike({
-          IndexName: "GSI1",
-          KeySchema: Match.arrayWith([
-            Match.objectLike({ AttributeName: "GSI1PK", KeyType: "HASH" }),
-            Match.objectLike({ AttributeName: "GSI1SK", KeyType: "RANGE" }),
-          ]),
-        }),
-      ]),
-    }));
-  });
-
-  test("exports API URL, User Pool, and table outputs", () => {
-    const template = Template.fromStack(stack);
-
-    const templateJson = template.toJSON();
-    const outputs = Object.values(templateJson.Outputs ?? {}) as Array<{
-      readonly Export?: { readonly Name?: string };
-    }>;
-    const exportNames = outputs
-      .map((output) => output.Export?.Name)
-      .filter((name): name is string => typeof name === "string");
-
-    // Check for expected exports (names may not have service prefix)
-    expect(exportNames).toEqual(
-      expect.arrayContaining([
-        `RestApiUrl-${serviceName}`,
-        `${serviceName}-TableName`,
-        `${serviceName}-TableArn`,
-        "UserPoolId", // Without prefix
-        "UserPoolClientId", // Without prefix
-      ])
-    );
-  });
-
-  test("configures SSM parameters for public bindings", () => {
-    const template = Template.fromStack(stack);
-
-    // Should have SSM parameters published
-    const ssmParams = template.findResources("AWS::SSM::Parameter");
-    const paramKeys = Object.keys(ssmParams);
-
-    // Should have at least some public parameters
-    expect(paramKeys.length).toBeGreaterThan(0);
   });
 });
