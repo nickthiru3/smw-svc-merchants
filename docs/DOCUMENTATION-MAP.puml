@@ -1,0 +1,187 @@
+@startuml Merchants Microservice Documentation Map
+
+!define ENTRY_POINT #LightBlue
+!define CORE_GUIDE #LightGreen
+!define CONFIG_GUIDE #LightYellow
+!define ENDPOINT_GUIDE #LightCoral
+!define DATABASE_GUIDE #LightSalmon
+!define TESTING_GUIDE #Lavender
+!define OTHER_GUIDE #Wheat
+
+title Merchants Microservice - Documentation Map
+
+' ============================================
+' ENTRY POINTS
+' ============================================
+
+package "📍 Entry Points" ENTRY_POINT {
+  [Project README] as ProjectREADME
+  [Docs README] as DocsREADME
+}
+
+' ============================================
+' CORE WORKFLOW GUIDES
+' ============================================
+
+package "🚀 Core Workflow" CORE_GUIDE {
+  [Implementation\nREADME] as ImplREADME
+  
+  package "Development Guides" {
+    [Microservice Dev\nGuide v2\n(Primary)] as DevGuideV2
+    [Microservice Dev\nGuide v1\n(Alternative)] as DevGuideV1
+  }
+}
+
+' ============================================
+' CONFIGURATION GUIDES
+' ============================================
+
+package "⚙️ Configuration" CONFIG_GUIDE {
+  [Configuration\nREADME] as ConfigREADME
+  
+  package "Domain Configs" {
+    [Environment\nConfig] as EnvConfig
+    [Service\nConfig] as ServiceConfig
+    [Database\nConfig] as DBConfig
+    [API\nConfig] as APIConfig
+    [Resources\nConfig] as ResourcesConfig
+    [Features\nConfig] as FeaturesConfig
+    [GitHub\nConfig] as GitHubConfig
+    [AWS\nConfig] as AWSConfig
+  }
+  
+  [Environment\nVariables] as EnvVars
+}
+
+' ============================================
+' ENDPOINT GUIDES
+' ============================================
+
+package "🔌 Endpoints" ENDPOINT_GUIDE {
+  [Part 1:\nLambda Handlers] as EndpointsPart1
+  [Part 2:\nAPI Gateway] as EndpointsPart2
+}
+
+' ============================================
+' DATABASE GUIDES
+' ============================================
+
+package "💾 Database" DATABASE_GUIDE {
+  [Database\nSetup] as DatabaseSetup
+  [Data Access\nLayer] as DataAccess
+}
+
+' ============================================
+' TESTING GUIDES
+' ============================================
+
+package "🧪 Testing" TESTING_GUIDE {
+  [Handler\nTesting] as HandlerTesting
+  [CDK Template\nTesting] as CDKTesting
+  [Schema\nTesting] as SchemaTesting
+  [Unit Helpers\nTesting] as HelpersTesting
+  [E2E\nTesting] as E2ETesting
+}
+
+' ============================================
+' OTHER GUIDES
+' ============================================
+
+package "📚 Other Guides" OTHER_GUIDE {
+  [Deployment] as Deployment
+  [Monitoring] as Monitoring
+  [Using\nConstructs] as UsingConstructs
+  [Authentication] as Authentication
+  [Authorization] as Authorization
+}
+
+' ============================================
+' NAVIGATION FLOW - ENTRY POINTS
+' ============================================
+
+ProjectREADME -down-> DocsREADME : "1. Start Here"
+DocsREADME -down-> ImplREADME : "2. Main Entry"
+
+' ============================================
+' NAVIGATION FLOW - MAIN WORKFLOW
+' ============================================
+
+ImplREADME -down-> DevGuideV2 : "Primary\nWorkflow"
+ImplREADME -down-> DevGuideV1 : "Alternative\nWorkflow"
+
+' ============================================
+' DEV GUIDE WORKFLOW (8 STEPS)
+' ============================================
+
+DevGuideV2 -right-> ConfigREADME : "Step 1:\nConfigure"
+DevGuideV2 -down-> DatabaseSetup : "Step 2:\nDatabase"
+DevGuideV2 -down-> EndpointsPart1 : "Step 3:\nHandlers"
+DevGuideV2 -down-> EndpointsPart2 : "Step 4:\nAPI Gateway"
+DevGuideV2 -down-> Deployment : "Step 5:\nDeploy"
+DevGuideV2 -down-> Monitoring : "Step 6:\nMonitor"
+
+' ============================================
+' CONFIGURATION HIERARCHY
+' ============================================
+
+ConfigREADME -down-> EnvConfig
+ConfigREADME -down-> ServiceConfig
+ConfigREADME -down-> DBConfig
+ConfigREADME -down-> APIConfig
+ConfigREADME -down-> ResourcesConfig
+ConfigREADME -down-> FeaturesConfig
+ConfigREADME -down-> GitHubConfig
+ConfigREADME -down-> AWSConfig
+ConfigREADME -right-> EnvVars : "Related"
+
+' ============================================
+' ENDPOINT GUIDES FLOW
+' ============================================
+
+EndpointsPart1 -right-> EndpointsPart2 : "Next"
+EndpointsPart1 -down-> HandlerTesting : "Test"
+EndpointsPart1 -down-> SchemaTesting : "Validate"
+EndpointsPart1 -down-> HelpersTesting : "Test Helpers"
+EndpointsPart2 -down-> CDKTesting : "Test CDK"
+
+' ============================================
+' DATABASE FLOW
+' ============================================
+
+DatabaseSetup -right-> DataAccess : "Data Ops"
+DatabaseSetup -up-> DBConfig : "Config"
+
+' ============================================
+' TESTING FLOW
+' ============================================
+
+HandlerTesting -right-> CDKTesting
+CDKTesting -right-> E2ETesting
+SchemaTesting -right-> HelpersTesting
+
+' ============================================
+' CROSS-REFERENCES
+' ============================================
+
+APIConfig -up-> EndpointsPart2 : "Details"
+DBConfig -down-> DatabaseSetup : "Details"
+ServiceConfig -down-> ResourcesConfig : "Uses"
+Authentication -right-> Authorization : "Related"
+Deployment -right-> Monitoring : "Post-Deploy"
+
+' ============================================
+' LEGEND
+' ============================================
+
+legend right
+  |= Color |= Category |
+  | <back:LightBlue>   </back> | Entry Points |
+  | <back:LightGreen>   </back> | Core Workflow |
+  | <back:LightYellow>   </back> | Configuration |
+  | <back:LightCoral>   </back> | Endpoints |
+  | <back:LightSalmon>   </back> | Database |
+  | <back:Lavender>   </back> | Testing |
+  | <back:Wheat>   </back> | Other Guides |
+endlegend
+
+@enduml

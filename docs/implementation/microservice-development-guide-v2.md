@@ -155,8 +155,8 @@ Implementation Guides (detailed topics)
 
 **Guides**:
 
-- [Configuration Management Guide](./configuration-management.md)
-- [Environment Variables Guide](./environment-variables.md)
+- [Configuration Management](./configuration-management/README.md)
+- [Environment Variables](./environment-variables.md)
 
 ---
 
@@ -184,15 +184,15 @@ Implementation Guides (detailed topics)
 
 **Guides**:
 
-- [Adding Endpoints](./adding-endpoints.md)
+- [Adding Endpoints - Part 1: Lambda Handlers](./adding-endpoints-part-1-lambda-handlers.md)
 
 ### 3.5. Step 5: Wire to API Gateway
 
-**Purpose**: Connect Lambda handlers to API Gateway
+**Purpose**: Connect Lambda handlers to API Gateway using CDK
 
 **Guides**:
 
-- [Adding Endpoints](./adding-endpoints.md)
+- [Adding Endpoints - Part 2: API Gateway Integration](./adding-endpoints-part-2-api-gateway.md)
 
 ---
 
@@ -658,7 +658,7 @@ const permissions: IPermissionsProvider = config.features?.permissionsEnabled
 
 ## Related Guides
 
-- [Configuration Management](./configuration-management.md)
+- [Configuration Management](./configuration-management/README.md)
 - [Environment Variables](./environment-variables.md)
 - [Database Setup](./database-setup.md)
 - [Data Access Layer](./data-access.md)

@@ -29,6 +29,7 @@ import {
   Cors,
   ResourceOptions,
 } from "aws-cdk-lib/aws-apigateway";
+import { Duration } from "aws-cdk-lib";
 import StageConstruct from "./stage/construct";
 import AuthorizationConstruct from "./authorization/construct";
 import EndpointsConstruct from "./endpoints/construct";
@@ -122,15 +123,17 @@ class ApiConstruct extends Construct {
     const { config, auth, db, permissions } = props;
 
     const serviceName = config.service.name;
+    const { restApi: restApiConfig, cors: corsConfig } = config.api;
 
     /*** API Gateway REST API ***/
 
     const restApi = new RestApi(this, "RestApi", {
-      restApiName: `${serviceName}`,
-      description: `API Gateway for ${serviceName}`,
-      endpointTypes: [EndpointType.REGIONAL],
-      deploy: false, // Disable automatic stage creation i.e. prod
-      cloudWatchRole: true,
+      restApiName: restApiConfig.name || serviceName,
+      description:
+        restApiConfig.description || `API Gateway for ${serviceName}`,
+      endpointTypes: [EndpointType[restApiConfig.endpointType]],
+      deploy: restApiConfig.deploy,
+      cloudWatchRole: restApiConfig.cloudWatchRole,
     });
 
     // Stages
@@ -144,6 +147,7 @@ class ApiConstruct extends Construct {
       restApi,
       auth,
       permissions,
+      config,
     });
 
     /*** CORS ***/
@@ -151,8 +155,19 @@ class ApiConstruct extends Construct {
     // Attach this to each root-level Resource
     const optionsWithCors: TCorsOnlyResourceOptions = {
       defaultCorsPreflightOptions: {
-        allowOrigins: Cors.ALL_ORIGINS,
-        allowMethods: Cors.ALL_METHODS,
+        allowOrigins:
+          corsConfig.allowOrigins === "*"
+            ? Cors.ALL_ORIGINS
+            : corsConfig.allowOrigins,
+        allowMethods:
+          corsConfig.allowMethods.length > 0
+            ? corsConfig.allowMethods.map((m) => m as any)
+            : Cors.ALL_METHODS,
+        allowHeaders: corsConfig.allowHeaders,
+        allowCredentials: corsConfig.allowCredentials,
+        maxAge: corsConfig.maxAge
+          ? Duration.seconds(corsConfig.maxAge)
+          : undefined,
       },
     };
 

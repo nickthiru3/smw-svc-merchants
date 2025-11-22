@@ -170,7 +170,7 @@ Implementation Guides (detailed topics)
 
 **See**:
 
-- [Configuration Management Guide](./configuration-management.md) - Detailed `.env` setup and config files
+- [Configuration Management](./configuration-management/README.md) - Detailed `.env` setup and config files
 - [Environment Variables Guide](./environment-variables.md) - Understanding CDK vs Lambda contexts
 
 ---
@@ -204,8 +204,8 @@ Implementation Guides (detailed topics)
 
 **See**:
 
-- [Configuration Management Guide](./configuration-management.md) - Config files and environment overrides
-- [Environment Variables Guide](./environment-variables.md) - "Two Worlds" concept (already covered in Step 0)
+- [Configuration Management](./configuration-management/README.md) - Config files and environment overrides
+- [Environment Variables](./environment-variables.md) - "Two Worlds" concept (already covered in Step 0)
 
 ---
 
@@ -840,7 +840,7 @@ For each resource, follow this 5-step process:
 
 ## Related Guides
 
-- [Configuration Management](./configuration-management.md)
+- [Configuration Management](./configuration-management/README.md)
 - [Environment Variables](./environment-variables.md)
 - [Database Setup](./database-setup.md)
 - [Data Access Layer](./data-access.md)

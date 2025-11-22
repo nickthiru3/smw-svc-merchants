@@ -93,7 +93,7 @@ cdk deploy
 
 #### 2.3.1. `.env` File (Local Development)
 
-**For detailed `.env` setup**, see [Configuration Management Guide](./configuration-management.md#0-env-and-envexample---environment-variables).
+**For detailed `.env` setup**, see [Configuration Management](./configuration-management/README.md).
 
 ```bash
 # .env

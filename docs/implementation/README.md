@@ -5,6 +5,13 @@
 
 ---
 
+## 📍 Navigation
+
+- **[← Back to Docs Home](../README.md)** - Documentation entry point
+- **[📊 Documentation Map](../DOCUMENTATION-MAP.md)** - Visual guide to all documentation
+
+---
+
 ## Overview
 
 This directory contains implementation guides for building backend features in the Merchants microservice.
@@ -39,7 +46,7 @@ Use these detailed guides as needed (referenced in the Microservice Development 
 
 **Core Guides** (used in main workflow):
 
-- **[Configuration Management](./configuration-management.md)** - Environment config, `.env` setup, validation
+- **[Configuration Management](./configuration-management/README.md)** - Environment config, `.env` setup, validation
 - **[Environment Variables](./environment-variables.md)** - CDK vs Lambda contexts, best practices
 - **[Database Setup](./database-setup.md)** - DynamoDB tables (Faux-SQL vs Single-Table)
 - **[Data Access Layer](./data-access.md)** - DynamoDB operations, transforms

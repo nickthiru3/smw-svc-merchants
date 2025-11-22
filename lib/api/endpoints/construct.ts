@@ -1,6 +1,7 @@
 import { Construct } from "constructs";
 import BindingsConstruct from "./bindings/construct";
 import UsersConstruct from "./users/construct";
+import MerchantsConstruct from "./merchants/construct";
 import AuthConstruct from "#lib/auth/construct";
 import DatabaseConstruct from "#lib/db/construct";
 import type { IApiProps } from "../construct";
@@ -25,6 +26,12 @@ class EndpointsConstruct extends Construct {
     });
 
     new UsersConstruct(this, "UsersConstruct", {
+      apiProps,
+      auth,
+      db,
+    });
+
+    new MerchantsConstruct(this, "MerchantsConstruct", {
       apiProps,
       auth,
       db,

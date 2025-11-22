@@ -8,7 +8,7 @@ import {
   MethodLoggingLevel,
 } from "aws-cdk-lib/aws-apigateway";
 import { LogGroup, RetentionDays } from "aws-cdk-lib/aws-logs";
-import { RemovalPolicy, CfnOutput } from "aws-cdk-lib";
+import { RemovalPolicy, CfnOutput, Duration } from "aws-cdk-lib";
 import type { IConfig } from "#config/default";
 
 interface IStageConstructProps {
@@ -16,6 +16,18 @@ interface IStageConstructProps {
   readonly config: IConfig;
 }
 
+/**
+ * Stage Construct
+ *
+ * Creates API Gateway deployment stage with configuration from config.api.stages.
+ * Supports:
+ * - Access logging to CloudWatch
+ * - Throttling (rate and burst limits)
+ * - Method-level logging and data tracing
+ * - Caching (optional)
+ *
+ * Stage configuration is environment-specific and defined in config/api.ts.
+ */
 class StageConstruct extends Construct {
   constructor(scope: Construct, id: string, props: IStageConstructProps) {
     super(scope, id);
@@ -24,6 +36,7 @@ class StageConstruct extends Construct {
 
     const envName = config.envName;
     const serviceName = config.service.name;
+    const stageConfig = config.api.stages[0]; // Single stage per environment
 
     const shouldProtectFromDeletion = envName !== "local" && envName !== "dev";
 
@@ -41,7 +54,7 @@ class StageConstruct extends Construct {
 
     const stage = new Stage(this, `Stage`, {
       deployment,
-      stageName: envName,
+      stageName: stageConfig.name,
       accessLogDestination: new LogGroupLogDestination(accessLogGroup),
       accessLogFormat: AccessLogFormat.jsonWithStandardFields({
         caller: false,
@@ -56,11 +69,17 @@ class StageConstruct extends Construct {
       }),
       methodOptions: {
         "/*/*": {
-          loggingLevel: MethodLoggingLevel.INFO,
-          dataTraceEnabled: true,
+          loggingLevel: stageConfig.logging
+            ? MethodLoggingLevel[stageConfig.logging.loggingLevel]
+            : MethodLoggingLevel.OFF,
+          dataTraceEnabled: stageConfig.logging?.dataTrace ?? false,
           metricsEnabled: true,
-          throttlingBurstLimit: 10,
-          throttlingRateLimit: 5,
+          throttlingBurstLimit: stageConfig.throttling?.burstLimit ?? 2000,
+          throttlingRateLimit: stageConfig.throttling?.rateLimit ?? 1000,
+          cachingEnabled: stageConfig.caching?.enabled ?? false,
+          cacheTtl: stageConfig.caching?.ttl
+            ? Duration.seconds(stageConfig.caching.ttl)
+            : undefined,
         },
       },
     });
