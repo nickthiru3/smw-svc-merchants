@@ -825,6 +825,7 @@ if (config.database.approach === "faux-sql") {
 
 - [Using CDK Constructs](./using-constructs.md) - Overview of all constructs
 - [Data Access Layer](./data-access.md) - DynamoDB query helpers
-- [Adding Endpoints](./adding-endpoints.md) - Lambda handlers
+- [Adding Endpoints - Part 1](./adding-endpoints-part-1-lambda-handlers.md) - Lambda handlers
+- [Adding Endpoints - Part 2](./adding-endpoints-part-2-api-gateway.md) - API Gateway integration
 - [Faux-SQL Design Guide](../../docs/guides/data-modeling/faux-sql-design.md) - Detailed design patterns
 - [Single-Table Design Guide](../../docs/guides/data-modeling/single-table-design.md) - Advanced patterns

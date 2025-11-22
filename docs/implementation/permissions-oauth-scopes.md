@@ -644,7 +644,8 @@ authorizationScopes: ["svc-merchants/read"];
 - [Authentication & Authorization](./authentication.md) - Cognito setup
 - [IAM Roles](./iam-roles.md) - Role-based access control
 - [Auth Overview](../../../docs/guides/auth/overview.md) - Comprehensive concepts
-- [Adding Endpoints](./adding-endpoints.md) - API Gateway configuration
+- [Adding Endpoints - Part 1](./adding-endpoints-part-1-lambda-handlers.md) - Lambda handlers
+- [Adding Endpoints - Part 2](./adding-endpoints-part-2-api-gateway.md) - API Gateway configuration
 
 ---
 

@@ -687,8 +687,8 @@ export AWS_REGION=us-east-1
 
 Once data access layer is complete:
 
-1. ✅ **[Add Lambda handlers](./adding-endpoints.md)** - Implement API endpoints
-2. ✅ **[Wire to API Gateway](./using-constructs.md)** - Configure API construct
+1. ✅ **[Add Lambda handlers](./adding-endpoints-part-1-lambda-handlers.md)** - Implement API endpoints
+2. ✅ **[Wire to API Gateway](./adding-endpoints-part-2-api-gateway.md)** - Configure API construct
 3. ✅ **[Add monitoring](./monitoring.md)** - Set up CloudWatch alarms
 
 ---

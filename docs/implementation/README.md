@@ -50,7 +50,8 @@ Use these detailed guides as needed (referenced in the Microservice Development 
 - **[Environment Variables](./environment-variables.md)** - CDK vs Lambda contexts, best practices
 - **[Database Setup](./database-setup.md)** - DynamoDB tables (Faux-SQL vs Single-Table)
 - **[Data Access Layer](./data-access.md)** - DynamoDB operations, transforms
-- **[Adding Endpoints](./adding-endpoints.md)** - Lambda handlers, API Gateway
+- **[Adding Endpoints - Part 1](./adding-endpoints-part-1-lambda-handlers.md)** - Lambda handlers implementation
+- **[Adding Endpoints - Part 2](./adding-endpoints-part-2-api-gateway.md)** - API Gateway integration
 - **[Testing](./testing.md)** - Unit, handler, CDK template, E2E tests
 - **[Deployment](./deployment.md)** - CDK deployment, environments
 - **[Monitoring & Observability](./monitoring.md)** - CloudWatch, alarms, SNS

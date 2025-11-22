@@ -278,7 +278,7 @@ Implementation Guides (detailed topics)
 
 **Purpose**: Implement business logic in Lambda handlers
 
-**Guide**: [Adding Endpoints](./adding-endpoints.md)
+**Guide**: [Adding Endpoints - Part 1: Lambda Handlers](./adding-endpoints-part-1-lambda-handlers.md)
 
 **Story Artifacts**:
 
@@ -313,7 +313,7 @@ Implementation Guides (detailed topics)
 
 **Purpose**: Connect Lambda handlers to API Gateway
 
-**Guide**: [Adding Endpoints](./adding-endpoints.md)
+**Guide**: [Adding Endpoints - Part 2: API Gateway Integration](./adding-endpoints-part-2-api-gateway.md)
 
 **Story Artifacts**:
 
@@ -697,18 +697,18 @@ const permissions: IPermissionsProvider = config.features?.permissionsEnabled
 
 ### 4.6. Summary: When to Use Each Construct
 
-| Construct            | When Needed                  | Implementation Guide                          |
-| -------------------- | ---------------------------- | --------------------------------------------- |
-| **Database**         | Always (data storage)        | [Database Setup](./database-setup.md)         |
-| **Lambda**           | Always (business logic)      | [Adding Endpoints](./adding-endpoints.md)     |
-| **API Gateway**      | Always (REST API)            | [Adding Endpoints](./adding-endpoints.md)     |
-| **Monitoring**       | Always (observability)       | [Monitoring](./monitoring.md)                 |
-| **Auth**             | User authentication required | [Authentication](./authentication.md)         |
-| **IAM**              | Role-based access control    | [IAM Roles](./iam-roles.md)                   |
-| **Permissions**      | Fine-grained OAuth scopes    | [OAuth Scopes](./permissions-oauth-scopes.md) |
-| **SSM Bindings**     | Consume from other services  | [SSM Bindings](./ssm-bindings.md)             |
-| **SSM Publications** | Publish for other services   | [SSM Publications](./ssm-publications.md)     |
-| **Events**           | Async service communication  | Future                                        |
+| Construct            | When Needed                  | Implementation Guide                                                    |
+| -------------------- | ---------------------------- | ----------------------------------------------------------------------- |
+| **Database**         | Always (data storage)        | [Database Setup](./database-setup.md)                                   |
+| **Lambda**           | Always (business logic)      | [Part 1: Lambda Handlers](./adding-endpoints-part-1-lambda-handlers.md) |
+| **API Gateway**      | Always (REST API)            | [Part 2: API Gateway](./adding-endpoints-part-2-api-gateway.md)         |
+| **Monitoring**       | Always (observability)       | [Monitoring](./monitoring.md)                                           |
+| **Auth**             | User authentication required | [Authentication](./authentication.md)                                   |
+| **IAM**              | Role-based access control    | [IAM Roles](./iam-roles.md)                                             |
+| **Permissions**      | Fine-grained OAuth scopes    | [OAuth Scopes](./permissions-oauth-scopes.md)                           |
+| **SSM Bindings**     | Consume from other services  | [SSM Bindings](./ssm-bindings.md)                                       |
+| **SSM Publications** | Publish for other services   | [SSM Publications](./ssm-publications.md)                               |
+| **Events**           | Async service communication  | Future                                                                  |
 
 ---
 
@@ -844,7 +844,8 @@ For each resource, follow this 5-step process:
 - [Environment Variables](./environment-variables.md)
 - [Database Setup](./database-setup.md)
 - [Data Access Layer](./data-access.md)
-- [Adding Endpoints](./adding-endpoints.md)
+- [Adding Endpoints - Part 1: Lambda Handlers](./adding-endpoints-part-1-lambda-handlers.md)
+- [Adding Endpoints - Part 2: API Gateway Integration](./adding-endpoints-part-2-api-gateway.md)
 - [Testing](./testing.md)
 - [Deployment](./deployment.md)
 - [Monitoring & Observability](./monitoring.md)

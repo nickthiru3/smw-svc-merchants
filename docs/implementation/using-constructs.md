@@ -37,7 +37,10 @@ This microservice uses CDK constructs to encapsulate infrastructure. This guide 
 
 ### Adding a New Endpoint
 
-See [Adding Endpoints](./adding-endpoints.md) for detailed guide.
+See the detailed guides:
+
+- [Part 1: Lambda Handlers](./adding-endpoints-part-1-lambda-handlers.md)
+- [Part 2: API Gateway Integration](./adding-endpoints-part-2-api-gateway.md)
 
 **Quick reference**:
 
