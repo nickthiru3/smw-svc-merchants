@@ -43,7 +43,7 @@ import { App, Stack } from "aws-cdk-lib";
 import { Template, Match } from "aws-cdk-lib/assertions";
 import { describe, it, expect, beforeEach } from "@jest/globals";
 import { RestApi } from "aws-cdk-lib/aws-apigateway";
-import GetConstruct from "#lib/api/endpoints/merchants/.well-known/bindings/get/construct";
+import GetConstruct from "#lib/api/endpoints/merchants/well-known/bindings/get/construct";
 
 describe("GET /merchants/.well-known/bindings Construct", () => {
   let stack: Stack;

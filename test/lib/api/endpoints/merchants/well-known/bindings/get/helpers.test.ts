@@ -14,7 +14,7 @@ import {
   env,
   readPublicBindingsFromSSM,
   createFallbackBindings,
-} from "#lib/api/endpoints/merchants/.well-known/bindings/get/helpers";
+} from "#lib/api/endpoints/merchants/well-known/bindings/get/helpers";
 
 describe("helpers.env", () => {
   const originalEnv = process.env;

@@ -22,7 +22,7 @@
  */
 
 import { Construct } from "constructs";
-import WellKnownConstruct from "./.well-known/construct";
+import WellKnownConstruct from "./well-known/construct";
 import GetConstruct from "./get/construct";
 import AuthConstruct from "#lib/auth/construct";
 import DatabaseConstruct from "#lib/db/construct";

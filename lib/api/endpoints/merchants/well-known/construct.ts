@@ -1,8 +1,11 @@
 /**
- * .well-known Resource Construct
+ * Well-Known Resource Construct
  *
  * Creates the .well-known resource under /merchants.
  * Follows RFC 8615 for well-known URIs.
+ *
+ * API Path: /merchants/.well-known
+ * Directory: merchants/well-known/
  *
  * Resource Hierarchy:
  * /merchants/.well-known
@@ -27,7 +30,7 @@ interface IConstructProps {
 }
 
 /**
- * .well-known Resource Construct
+ * Well-Known Resource Construct
  *
  * Creates the .well-known resource and instantiates sub-resource constructs.
  */

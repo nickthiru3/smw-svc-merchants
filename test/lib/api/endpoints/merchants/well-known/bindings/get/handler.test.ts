@@ -8,7 +8,7 @@ jest.mock("@aws-sdk/client-ssm", () => ({
   GetParametersByPathCommand: jest.fn((params) => params),
 }));
 
-import { handler } from "#lib/api/endpoints/merchants/.well-known/bindings/get/handler";
+import { handler } from "#lib/api/endpoints/merchants/well-known/bindings/get/handler";
 
 describe("GET /.well-known/bindings handler (behavior)", () => {
   const originalEnv = process.env;

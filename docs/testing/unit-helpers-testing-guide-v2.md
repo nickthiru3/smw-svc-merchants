@@ -25,7 +25,7 @@ Helper tests verify **business logic and data transformations** in isolation:
 
 **File**: `test/lib/api/endpoints/[resource]/[sub-resource]/.../[method]/helpers.test.ts`
 
-**Example**: `test/lib/api/endpoints/merchants/.well-known/bindings/get/helpers.test.ts`
+**Example**: `test/lib/api/endpoints/merchants/well-known/bindings/get/helpers.test.ts`
 
 ### Service Helpers
 

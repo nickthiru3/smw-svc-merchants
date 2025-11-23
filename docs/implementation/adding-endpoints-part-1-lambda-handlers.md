@@ -171,10 +171,10 @@ lib/api/endpoints/[resource]/[sub-resource]/.../[method]/
 └── construct.ts        # CDK construct (Part 2)
 ```
 
-**Example**: For `GET /merchants/.well-known/bindings/get`:
+**Example**: For `GET /merchants/well-known/bindings`:
 
 ```
-lib/api/endpoints/merchants/.well-known/bindings/get/
+lib/api/endpoints/merchants/well-known/bindings/get/
 ├── handler.ts
 ├── helpers.ts
 ├── types.ts

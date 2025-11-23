@@ -41,7 +41,7 @@ Handler tests verify the **orchestration layer** of your Lambda function:
 
 **File**: `test/lib/api/endpoints/[resource]/[sub-resource]/.../[method]/handler.test.ts`
 
-**Example**: `test/lib/api/endpoints/merchants/.well-known/bindings/get/handler.test.ts`
+**Example**: `test/lib/api/endpoints/merchants/well-known/bindings/get/handler.test.ts`
 
 **Structure**:
 
