@@ -174,7 +174,7 @@ export interface IConfig {
 
 ### SSM Parameter Conventions
 
-See [SSM Bindings Pattern](../../../../docs/guides/patterns/ssm-bindings.md) for details.
+See [SSM Bindings Implementation](../../docs/implementation/ssm-bindings.md) for details.
 
 **Parameter Naming**:
 

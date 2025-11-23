@@ -1,9 +1,9 @@
 /**
- * GET /merchants/search Endpoint Construct
+ * GET /merchants Endpoint Construct
  *
- * Creates infrastructure for merchant search endpoint with:
+ * Creates infrastructure for merchant list/filter endpoint with:
  * - API Gateway request validation (query parameters)
- * - Lambda function for merchant search
+ * - Lambda function for merchant filtering by category
  * - DynamoDB query integration
  * - IAM permissions for least-privilege access
  *
@@ -13,8 +13,8 @@
  * - Layer 3 (AWS Resources): Creates CDK constructs
  *
  * Design Artifacts:
- * - OpenAPI Spec: docs/project/specs/api/resources/merchants/search.yaml
- * - Actions & Queries: Query 1: Search Merchants by Category
+ * - OpenAPI Spec: docs/project/specs/api/resources/merchants/get.yaml
+ * - Actions & Queries: Query 1: Get Merchants by Category
  *
  * @see docs/implementation/adding-endpoints-part-2-api-gateway.md - CDK patterns
  */
@@ -35,7 +35,7 @@ import path from "path";
 import AuthConstruct from "#lib/auth/construct";
 import DatabaseConstruct from "#lib/db/construct";
 import type { IApiProps } from "#lib/api/construct";
-import { searchMerchantsQuerySchema } from "./api.schema";
+import { getMerchantsQuerySchema } from "./api.schema";
 
 interface IConstructProps {
   readonly apiProps: IApiProps;
@@ -45,19 +45,19 @@ interface IConstructProps {
 }
 
 /**
- * GET /merchants/search Endpoint Construct
+ * GET /merchants Endpoint Construct
  *
- * Implements merchant search by category endpoint.
+ * Implements merchant list/filter by category endpoint.
  * This is a read-only operation that queries DynamoDB GSI1.
  */
-class SearchConstruct extends Construct {
+class GetConstruct extends Construct {
   queryParamsModel: Model;
   requestValidator: RequestValidator;
   validationErrorResponse: GatewayResponse;
   lambda: NodejsFunction;
 
   /**
-   * Creates the GET /merchants/search endpoint construct
+   * Creates the GET /merchants endpoint construct
    *
    * Orchestrates:
    * 1. Request validation setup (query parameter validator, error response)
@@ -104,7 +104,7 @@ class SearchConstruct extends Construct {
     this.queryParamsModel = new Model(this, `QueryParamsModel`, {
       restApi: apiProps.restApi,
       contentType: "application/json",
-      schema: searchMerchantsQuerySchema,
+      schema: getMerchantsQuerySchema,
     });
   }
 
@@ -224,7 +224,7 @@ class SearchConstruct extends Construct {
   }
 
   /**
-   * Adds GET method to /merchants/search resource with Lambda integration and validation
+   * Adds GET method to /merchants resource with Lambda integration and validation
    *
    * Configures:
    * - HTTP Method: GET
@@ -233,7 +233,7 @@ class SearchConstruct extends Construct {
    * - Authorization: None (public endpoint for browsing merchants)
    *
    * Request Flow:
-   * 1. API Gateway receives GET /merchants/search?category=Repair request
+   * 1. API Gateway receives GET /merchants?category=Repair request
    * 2. Validates query parameters (category required, must be valid enum)
    * 3. If valid, invokes Lambda function
    * 4. If invalid, returns 400 with validation error details
@@ -246,12 +246,9 @@ class SearchConstruct extends Construct {
   addApiMethodWithLambdaIntegrationAndRequestValidation(
     merchantsResource: IResource
   ) {
-    // Create /search sub-resource under /merchants
-    const searchResource = merchantsResource.addResource("search");
-
-    // Add GET method with query parameter validation
-    searchResource.addMethod("GET", new LambdaIntegration(this.lambda), {
-      operationName: "SearchMerchantsByCategory",
+    // Add GET method directly to /merchants resource with query parameter validation
+    merchantsResource.addMethod("GET", new LambdaIntegration(this.lambda), {
+      operationName: "GetMerchantsByCategory",
       requestValidator: this.requestValidator,
       requestParameters: {
         "method.request.querystring.category": true, // Required parameter
@@ -260,4 +257,4 @@ class SearchConstruct extends Construct {
   }
 }
 
-export default SearchConstruct;
+export default GetConstruct;

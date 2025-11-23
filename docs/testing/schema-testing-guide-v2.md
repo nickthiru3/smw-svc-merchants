@@ -19,9 +19,9 @@ Schema tests ensure payload validation works correctly:
 
 ## Test Location
 
-**File**: `test/lib/api/endpoints/[resource]/[method]/payload.schema.test.ts`
+**File**: `test/lib/api/endpoints/[resource]/[sub-resource]/.../[method]/payload.schema.test.ts`
 
-**Example**: `test/lib/api/endpoints/merchants/get/payload.schema.test.ts`
+**Example**: `test/lib/api/endpoints/merchants/.well-known/bindings/get/payload.schema.test.ts`
 
 **Structure**:
 

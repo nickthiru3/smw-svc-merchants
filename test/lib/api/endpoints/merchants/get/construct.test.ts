@@ -1,7 +1,7 @@
 /**
- * CDK Template Tests for GET /merchants/search Construct
+ * CDK Template Tests for GET /merchants Construct
  *
- * Tests CDK infrastructure for merchant search endpoint.
+ * Tests CDK infrastructure for merchant list/filter endpoint.
  *
  * Test Coverage:
  * - Lambda function configuration
@@ -10,7 +10,7 @@
  * - API Gateway method integration
  * - Request validation
  *
- * @see lib/api/endpoints/merchants/search/construct.ts - Implementation
+ * @see lib/api/endpoints/merchants/get/construct.ts - Implementation
  */
 
 // Mock NodejsFunction to avoid Docker bundling in tests
@@ -45,9 +45,9 @@ import { Template, Match } from "aws-cdk-lib/assertions";
 import { describe, it, expect, beforeEach } from "@jest/globals";
 import { RestApi } from "aws-cdk-lib/aws-apigateway";
 import { TableV2, AttributeType } from "aws-cdk-lib/aws-dynamodb";
-import SearchConstruct from "#lib/api/endpoints/merchants/search/construct";
+import GetConstruct from "#lib/api/endpoints/merchants/get/construct";
 
-describe("GET /merchants/search Construct", () => {
+describe("GET /merchants Construct", () => {
   let stack: Stack;
   let template: Template;
 
@@ -94,7 +94,7 @@ describe("GET /merchants/search Construct", () => {
     const merchantsResource = mockRestApi.root.addResource("merchants");
 
     // Test ONLY this construct
-    new SearchConstruct(stack, "SearchConstruct", {
+    new GetConstruct(stack, "GetConstruct", {
       apiProps: mockApiProps as any,
       auth: mockAuth as any,
       db: mockDb as any,
@@ -224,7 +224,7 @@ describe("GET /merchants/search Construct", () => {
 
     it("should set operation name", () => {
       template.hasResourceProperties("AWS::ApiGateway::Method", {
-        OperationName: "SearchMerchantsByCategory",
+        OperationName: "GetMerchantsByCategory",
       });
     });
   });

@@ -1,5 +1,5 @@
 /**
- * Integration Tests for GET /merchants/search Handler
+ * Integration Tests for GET /merchants Handler
  *
  * Tests the complete handler flow with mocked AWS services.
  *
@@ -10,14 +10,14 @@
  * - Database errors (500)
  * - Request/response formatting
  *
- * @see lib/api/endpoints/merchants/search/handler.ts - Implementation
+ * @see lib/api/endpoints/merchants/get/handler.ts - Implementation
  */
 
 import { describe, it, expect, beforeEach, jest } from "@jest/globals";
 import { mockClient } from "aws-sdk-client-mock";
 import { DynamoDBDocumentClient, QueryCommand } from "@aws-sdk/lib-dynamodb";
 import type { APIGatewayProxyEvent, Context } from "aws-lambda";
-import { handler } from "#lib/api/endpoints/merchants/search/handler";
+import { handler } from "#lib/api/endpoints/merchants/get/handler";
 import { PrimaryCategory } from "#src/types/merchant";
 
 // Mock DynamoDB Document Client
@@ -35,7 +35,7 @@ function createMockEvent(
 ): APIGatewayProxyEvent {
   return {
     httpMethod: "GET",
-    path: "/merchants/search",
+    path: "/merchants",
     queryStringParameters,
     headers: {},
     multiValueHeaders: {},
@@ -47,7 +47,7 @@ function createMockEvent(
       apiId: "test-api-id",
       protocol: "HTTP/1.1",
       httpMethod: "GET",
-      path: "/merchants/search",
+      path: "/merchants",
       stage: "test",
       requestTime: "01/Jan/2024:00:00:00 +0000",
       requestTimeEpoch: 1704067200000,

@@ -1,36 +1,46 @@
+/**
+ * GET /merchants/.well-known/bindings Construct
+ *
+ * Service discovery endpoint that returns public bindings for this service.
+ * Follows the .well-known URI convention (RFC 8615).
+ *
+ * @see https://datatracker.ietf.org/doc/html/rfc8615
+ */
+
 import { Construct } from "constructs";
-import { LambdaIntegration } from "aws-cdk-lib/aws-apigateway";
+import { LambdaIntegration, IResource } from "aws-cdk-lib/aws-apigateway";
 import { NodejsFunction } from "aws-cdk-lib/aws-lambda-nodejs";
 import { Runtime } from "aws-cdk-lib/aws-lambda";
 import { Duration } from "aws-cdk-lib";
-import { PolicyStatement } from "aws-cdk-lib/aws-iam";
-import { Effect } from "aws-cdk-lib/aws-iam";
+import { PolicyStatement, Effect } from "aws-cdk-lib/aws-iam";
 import path from "path";
 import { buildSsmPublicPath } from "#src/helpers/ssm";
 import type { IApiProps } from "#lib/api/construct";
 import type { IConfig } from "#config/default";
 
-interface IBindingsConstructProps {
+/**
+ * Props for GetConstruct
+ */
+interface IGetConstructProps {
   readonly config: IConfig;
   readonly apiProps: IApiProps;
+  readonly bindingsResource: IResource;
 }
 
-class BindingsConstruct extends Construct {
-  constructor(scope: Construct, id: string, props: IBindingsConstructProps) {
+/**
+ * GET /merchants/.well-known/bindings Construct
+ *
+ * Creates the GET method for the bindings endpoint.
+ */
+class GetConstruct extends Construct {
+  constructor(scope: Construct, id: string, props: IGetConstructProps) {
     super(scope, id);
 
-    const { config, apiProps } = props;
-
+    const { config, apiProps, bindingsResource } = props;
     const { envName, region } = config;
-
     const ssmPublicPath = buildSsmPublicPath(envName);
 
-    const wk = apiProps.restApi.root.addResource(
-      ".well-known",
-      apiProps.optionsWithCors
-    );
-    const bindings = wk.addResource("bindings", apiProps.optionsWithCors);
-
+    // Lambda function
     const lambda = new NodejsFunction(this, "NodejsFunction", {
       bundling: {
         externalModules: ["@aws-sdk"],
@@ -41,7 +51,10 @@ class BindingsConstruct extends Construct {
       timeout: Duration.minutes(1),
       entry: path.join(__dirname, "./handler.ts"),
       handler: "handler",
-      depsLockFilePath: path.join(__dirname, "../../../../package-lock.json"),
+      depsLockFilePath: path.join(
+        __dirname,
+        "../../../../../package-lock.json"
+      ),
       environment: {
         ENV_NAME: envName,
         REGION: region,
@@ -56,10 +69,11 @@ class BindingsConstruct extends Construct {
       ],
     });
 
-    bindings.addMethod("GET", new LambdaIntegration(lambda), {
+    // Add GET method to /merchants/.well-known/bindings
+    bindingsResource.addMethod("GET", new LambdaIntegration(lambda), {
       operationName: "ServiceDiscovery_Bindings",
     });
   }
 }
 
-export default BindingsConstruct;
+export default GetConstruct;

@@ -1,5 +1,5 @@
 /**
- * Zod Schemas for Runtime Validation - GET /merchants/search
+ * Zod Schemas for Runtime Validation - GET /merchants
  *
  * Runtime validation of request data using Zod.
  * Separate from API Gateway JSON schemas (api.schema.ts).

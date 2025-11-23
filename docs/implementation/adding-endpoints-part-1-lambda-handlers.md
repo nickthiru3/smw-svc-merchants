@@ -157,12 +157,12 @@ Lambda handler implementation requires these Phase 3 artifacts:
 
 ### 4.2. Create Handler Directory Structure
 
-**Location**: `lib/api/endpoints/[resource]/[method]/`
+**Location**: `lib/api/endpoints/[resource]/[sub-resource]/.../[method]/`
 
 **Files to Create**:
 
 ```
-lib/api/endpoints/[resource]/[method]/
+lib/api/endpoints/[resource]/[sub-resource]/.../[method]/
 ├── handler.ts          # Layer 1: Orchestration
 ├── helpers.ts          # Layer 2: Business logic
 ├── types.ts            # TypeScript interfaces
@@ -171,10 +171,10 @@ lib/api/endpoints/[resource]/[method]/
 └── construct.ts        # CDK construct (Part 2)
 ```
 
-**Example**: For `GET /merchants`:
+**Example**: For `GET /merchants/.well-known/bindings/get`:
 
 ```
-lib/api/endpoints/merchants/get/
+lib/api/endpoints/merchants/.well-known/bindings/get/
 ├── handler.ts
 ├── helpers.ts
 ├── types.ts

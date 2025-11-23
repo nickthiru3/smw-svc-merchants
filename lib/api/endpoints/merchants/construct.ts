@@ -4,7 +4,8 @@
  * Creates /merchants API resource and all its sub-resources/methods.
  *
  * Current Endpoints:
- * - GET /merchants/search - Search merchants by category (Story 001)
+ * - GET /merchants/.well-known/bindings - Service discovery
+ * - GET /merchants - List/filter merchants by category (Story 001)
  *
  * Future Endpoints:
  * - GET /merchants/{id} - Get merchant by ID
@@ -21,12 +22,15 @@
  */
 
 import { Construct } from "constructs";
-import SearchConstruct from "./search/construct";
+import WellKnownConstruct from "./.well-known/construct";
+import GetConstruct from "./get/construct";
 import AuthConstruct from "#lib/auth/construct";
 import DatabaseConstruct from "#lib/db/construct";
 import type { IApiProps } from "../../construct";
+import type { IConfig } from "#config/default";
 
-interface IMerchantsConstructProps {
+interface IConstructProps {
+  readonly config: IConfig;
   readonly apiProps: IApiProps;
   readonly auth: AuthConstruct;
   readonly db: DatabaseConstruct;
@@ -45,10 +49,10 @@ class MerchantsConstruct extends Construct {
    * @param id - Construct identifier
    * @param props - Configuration properties
    */
-  constructor(scope: Construct, id: string, props: IMerchantsConstructProps) {
+  constructor(scope: Construct, id: string, props: IConstructProps) {
     super(scope, id);
 
-    const { apiProps, auth, db } = props;
+    const { config, apiProps, auth, db } = props;
 
     // Create /merchants resource with CORS
     const merchantsResource = apiProps.restApi.root.addResource(
@@ -56,8 +60,15 @@ class MerchantsConstruct extends Construct {
       apiProps.optionsWithCors
     );
 
-    // Add GET /merchants/search endpoint
-    new SearchConstruct(this, "SearchConstruct", {
+    // GET /merchants/.well-known/bindings (service discovery)
+    new WellKnownConstruct(this, "WellKnownConstruct", {
+      config,
+      apiProps,
+      merchantsResource,
+    });
+
+    // GET /merchants (list/filter by category)
+    new GetConstruct(this, "GetConstruct", {
       apiProps,
       auth,
       db,

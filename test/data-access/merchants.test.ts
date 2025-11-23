@@ -29,7 +29,7 @@ import {
   getMerchantById,
   updateMerchant,
   deleteMerchant,
-  searchMerchantsByCategory,
+  getMerchantsByCategory,
 } from "#src/data-access/merchants";
 import { PrimaryCategory, MerchantStatus } from "#src/types/merchant";
 import type {
@@ -157,9 +157,9 @@ describe("Merchant Data Access Layer", () => {
       await createMerchant(ddbMock as any, input);
 
       const calls = ddbMock.commandCalls(PutCommand);
-      const item = calls[0].args[0].input.Item;
-      expect(item.GSI1PK).toBe(PrimaryCategory.RECYCLING);
-      expect(item.PrimaryCategory).toBe(PrimaryCategory.RECYCLING);
+      const item = calls[0]?.args[0]?.input?.Item;
+      expect(item?.GSI1PK).toBe(PrimaryCategory.RECYCLING);
+      expect(item?.PrimaryCategory).toBe(PrimaryCategory.RECYCLING);
     });
   });
 
@@ -368,7 +368,7 @@ describe("Merchant Data Access Layer", () => {
     });
   });
 
-  describe("searchMerchantsByCategory", () => {
+  describe("getMerchantsByCategory", () => {
     it("should return all merchants in category", async () => {
       const mockItems = [
         {
@@ -417,7 +417,7 @@ describe("Merchant Data Access Layer", () => {
 
       ddbMock.on(QueryCommand).resolves({ Items: mockItems });
 
-      const result = await searchMerchantsByCategory(
+      const result = await getMerchantsByCategory(
         ddbMock as any,
         PrimaryCategory.REPAIR
       );
@@ -444,7 +444,7 @@ describe("Merchant Data Access Layer", () => {
     it("should return empty array when no merchants found", async () => {
       ddbMock.on(QueryCommand).resolves({ Items: [] });
 
-      const result = await searchMerchantsByCategory(
+      const result = await getMerchantsByCategory(
         ddbMock as any,
         PrimaryCategory.DONATE
       );
@@ -457,7 +457,7 @@ describe("Merchant Data Access Layer", () => {
     it("should handle undefined Items in response", async () => {
       ddbMock.on(QueryCommand).resolves({});
 
-      const result = await searchMerchantsByCategory(
+      const result = await getMerchantsByCategory(
         ddbMock as any,
         PrimaryCategory.REFILL
       );

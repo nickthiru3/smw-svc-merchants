@@ -1,5 +1,5 @@
 /**
- * API Gateway JSON Schema for GET /merchants/search
+ * API Gateway JSON Schema for GET /merchants
  *
  * Defines request validation schema for API Gateway.
  * This is separate from Zod runtime validation (payload.schema.ts).
@@ -10,7 +10,7 @@
  * - Reduced Lambda costs
  *
  * Design Artifacts:
- * - OpenAPI Spec: docs/project/specs/api/resources/merchants/search.yaml
+ * - OpenAPI Spec: docs/project/specs/api/resources/merchants/get.yaml
  * - Parameter Spec: docs/project/specs/api/parameters/query/category.yaml
  *
  * @see docs/implementation/adding-endpoints-part-2-api-gateway.md - API Gateway integration
@@ -19,7 +19,7 @@
 import { JsonSchema, JsonSchemaType } from "aws-cdk-lib/aws-apigateway";
 
 /**
- * Query Parameters Schema for GET /merchants/search
+ * Query Parameters Schema for GET /merchants
  *
  * Validates:
  * - category: Required string, must be one of the valid enum values
@@ -29,7 +29,7 @@ import { JsonSchema, JsonSchemaType } from "aws-cdk-lib/aws-apigateway";
  * - Case-sensitive
  * - Required parameter
  */
-export const searchMerchantsQuerySchema: JsonSchema = {
+export const getMerchantsQuerySchema: JsonSchema = {
   type: JsonSchemaType.OBJECT,
   properties: {
     category: {

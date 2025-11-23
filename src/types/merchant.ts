@@ -214,12 +214,12 @@ export interface UpdateMerchantInput {
 }
 
 /**
- * SearchMerchantsResult
+ * GetMerchantsResult
  *
- * Result from searching merchants by category
+ * Result from getting/filtering merchants by category
  * Matches API response structure from actions-queries.md
  */
-export interface SearchMerchantsResult {
+export interface GetMerchantsResult {
   readonly merchants: Merchant[];
   readonly count: number;
   readonly category: string;

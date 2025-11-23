@@ -29,7 +29,7 @@ import type {
   MerchantItem,
   CreateMerchantInput,
   UpdateMerchantInput,
-  SearchMerchantsResult,
+  GetMerchantsResult,
   PrimaryCategory,
 } from "#src/types/merchant";
 import { MerchantStatus } from "#src/types/merchant";
@@ -437,34 +437,34 @@ export async function deleteMerchant(
 }
 
 /**
- * Search Merchants by Category
+ * Get Merchants by Category
  *
  * Retrieves all merchants in a specified category.
  * Uses GSI1 for efficient querying.
  *
- * Access Pattern: Search merchants by category
+ * Access Pattern: Get merchants by category
  * Table/Index: GSI1
  * Query: GSI1PK = category
  *
  * Note: Returns ALL merchants in category. Client performs distance filtering.
  *
  * @param client - DynamoDB Document Client
- * @param category - Primary category to search
- * @returns Search result with merchants array
+ * @param category - Primary category to filter by
+ * @returns Result with merchants array
  *
  * @see docs/project/specs/stories/consumers/browse-providers-by-waste-category/actions-queries.md
  *
  * @example
  * ```typescript
- * const result = await searchMerchantsByCategory(client, PrimaryCategory.REPAIR);
+ * const result = await getMerchantsByCategory(client, PrimaryCategory.REPAIR);
  * console.log(`Found ${result.count} repair shops`);
  * // Client filters by distance using lat/lng
  * ```
  */
-export async function searchMerchantsByCategory(
+export async function getMerchantsByCategory(
   client: DynamoDBDocumentClient,
   category: PrimaryCategory
-): Promise<SearchMerchantsResult> {
+): Promise<GetMerchantsResult> {
   const result = await client.send(
     new QueryCommand({
       TableName: getTableName(),

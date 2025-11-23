@@ -98,7 +98,7 @@ These are story-specific (in constructs):
 
 ### 5.1. Create API Gateway JSON Schema
 
-**File**: `lib/api/endpoints/[resource]/[method]/api.schema.ts`
+**File**: `lib/api/endpoints/[resource]/[sub-resource]/.../[method]/api.schema.ts`
 
 **Example**:
 
@@ -168,7 +168,7 @@ export default MerchantsConstruct;
 
 ### 5.3. Create Method-Level Construct
 
-**File**: `lib/api/endpoints/[resource]/[method]/construct.ts`
+**File**: `lib/api/endpoints/[resource]/[sub-resource]/.../[method]/construct.ts`
 
 **Key Methods** (in order):
 
@@ -191,7 +191,7 @@ export default MerchantsConstruct;
   - Parameter validation: `ResponseType.BAD_REQUEST_PARAMETERS`
 
 **Example** (see `lib/api/endpoints/users/post/construct.ts` for POST pattern)
-**Example** (see `lib/api/endpoints/merchants/search/construct.ts` for GET pattern)
+**Example** (see `lib/api/endpoints/merchants/get/construct.ts` for GET pattern)
 
 ---
 
@@ -237,7 +237,7 @@ Test your API Gateway integration at two levels: **construct-level** (recommende
 
 #### Construct-Level Tests (Recommended)
 
-**File**: `test/lib/api/endpoints/[resource]/[method]/construct.test.ts`
+**File**: `test/lib/api/endpoints/[resource]/[sub-resource]/.../[method]/construct.test.ts`
 
 **Pros**: ⚡ Fast, 🎯 Focused, 🐛 Easy to debug
 
@@ -436,7 +436,7 @@ For comprehensive testing guidance, see:
 
 Before committing your endpoint:
 
-- [ ] **Construct tests pass** - `npm test -- endpoints/[resource]/[method]`
+- [ ] **Construct tests pass** - `npm test -- endpoints/[resource]/[sub-resource]/.../[method]/`
 - [ ] **Handler tests pass** - Validation, error handling, business logic
 - [ ] **Stack tests pass** - `npm test -- service-stack`
 - [ ] **Linting passes** - `npm run lint`

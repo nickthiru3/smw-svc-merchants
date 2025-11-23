@@ -1,7 +1,7 @@
 /**
- * GET /merchants/search Handler
+ * GET /merchants Handler
  *
- * Query merchants by waste category.
+ * Query/filter merchants by waste category.
  *
  * Layer 1 (This file): Business flow orchestration
  * - Coordinates the query process
@@ -18,7 +18,7 @@
  * - DynamoDB queries via data access layer
  *
  * Design Artifacts:
- * - Actions & Queries: Query 1: Search Merchants by Category
+ * - Actions & Queries: Query 1: Get Merchants by Category
  * - Story Card: Business rules and validation
  * - Entity: Access pattern implementation
  *
@@ -27,6 +27,7 @@
 
 import type { APIGatewayProxyEvent, Context } from "aws-lambda";
 import type { TApiResponse } from "#src/helpers/api";
+import type { PrimaryCategory } from "#src/types/merchant";
 import {
   parseAndValidateQueryParams,
   getRequiredEnv,
@@ -38,7 +39,7 @@ import {
 } from "./helpers";
 
 /**
- * Handler for GET /merchants/search
+ * Handler for GET /merchants
  *
  * Flow:
  * 1. Log incoming request
@@ -70,7 +71,8 @@ export const handler = async (
   if (!paramsResult.ok) {
     return paramsResult.response;
   }
-  const { category } = paramsResult.data;
+  // Category is validated to be a valid PrimaryCategory value
+  const { category } = paramsResult.data as { category: PrimaryCategory };
 
   // Verify environment configuration
   const envResult = getRequiredEnv();

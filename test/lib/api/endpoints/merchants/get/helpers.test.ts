@@ -1,5 +1,5 @@
 /**
- * Unit Tests for GET /merchants/search Helpers
+ * Unit Tests for GET /merchants Helpers
  *
  * Tests business logic and helper functions in isolation.
  *
@@ -10,7 +10,7 @@
  * - Response formatting
  * - Error handling
  *
- * @see lib/api/endpoints/merchants/search/helpers.ts - Implementation
+ * @see lib/api/endpoints/merchants/get/helpers.ts - Implementation
  */
 
 import { describe, it, expect, beforeEach, jest } from "@jest/globals";
@@ -25,8 +25,8 @@ import {
   prepareErrorResponse,
   logEventReceived,
   logQuerySuccess,
-} from "#lib/api/endpoints/merchants/search/helpers";
-import { PrimaryCategory } from "#src/types/merchant";
+} from "#lib/api/endpoints/merchants/get/helpers";
+import { PrimaryCategory, MerchantStatus } from "#src/types/merchant";
 
 // Mock DynamoDB Document Client
 const ddbMock = mockClient(DynamoDBDocumentClient);
@@ -37,7 +37,7 @@ const consoleErrorSpy = jest
   .spyOn(console, "error")
   .mockImplementation(() => {});
 
-describe("GET /merchants/search - Helpers", () => {
+describe("GET /merchants - Helpers", () => {
   beforeEach(() => {
     ddbMock.reset();
     consoleLogSpy.mockClear();
@@ -265,7 +265,7 @@ describe("GET /merchants/search - Helpers", () => {
         shortDescription: "A test shop",
         primaryCategory: PrimaryCategory.REPAIR,
         categories: ["Repair"],
-        verificationStatus: "Verified" as const,
+        verificationStatus: MerchantStatus.VERIFIED,
         location: {
           address: "123 Main St",
           city: "Toronto",
@@ -335,14 +335,14 @@ describe("GET /merchants/search - Helpers", () => {
     it("should log request metadata", () => {
       const event = {
         httpMethod: "GET",
-        path: "/merchants/search",
+        path: "/merchants",
         queryStringParameters: { category: "Repair" },
         requestContext: {
           requestId: "test-request-id",
         },
-      } as Partial<APIGatewayProxyEvent>;
+      } as unknown as APIGatewayProxyEvent;
 
-      logEventReceived(event as APIGatewayProxyEvent);
+      logEventReceived(event);
 
       expect(consoleLogSpy).toHaveBeenCalled();
       const loggedData = JSON.parse(consoleLogSpy.mock.calls[0][0] as string);
@@ -350,7 +350,7 @@ describe("GET /merchants/search - Helpers", () => {
       expect(loggedData.message).toBe("Request received");
       expect(loggedData.requestId).toBe("test-request-id");
       expect(loggedData.httpMethod).toBe("GET");
-      expect(loggedData.path).toBe("/merchants/search");
+      expect(loggedData.path).toBe("/merchants");
     });
   });
 

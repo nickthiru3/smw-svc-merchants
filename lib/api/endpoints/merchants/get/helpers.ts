@@ -1,5 +1,5 @@
 /**
- * Business Logic and Helper Functions for GET /merchants/search
+ * Business Logic and Helper Functions for GET /merchants
  *
  * Layer 2: Business logic and transformations
  * - Input validation
@@ -18,12 +18,9 @@ import type { APIGatewayProxyEvent } from "aws-lambda";
 import { apiError, apiSuccess } from "#src/helpers/api";
 import type { TApiResponse } from "#src/helpers/api";
 import { getDocumentClient } from "#src/helpers/ddb";
-import { searchMerchantsByCategory } from "#src/data-access/merchants";
+import { getMerchantsByCategory } from "#src/data-access/merchants";
 import { PrimaryCategory } from "#src/types/merchant";
-import type {
-  ISearchMerchantsQueryParams,
-  ISearchMerchantsResponse,
-} from "./types";
+import type { IGetMerchantsQueryParams, IGetMerchantsResponse } from "./types";
 import { queryParamsSchema } from "./payload.schema";
 
 /**
@@ -38,7 +35,7 @@ import { queryParamsSchema } from "./payload.schema";
 export function parseAndValidateQueryParams(
   event: APIGatewayProxyEvent
 ):
-  | { readonly ok: true; readonly data: ISearchMerchantsQueryParams }
+  | { readonly ok: true; readonly data: IGetMerchantsQueryParams }
   | { readonly ok: false; readonly response: TApiResponse } {
   try {
     const params = queryParamsSchema.parse(event.queryStringParameters);
@@ -96,11 +93,11 @@ export function getRequiredEnv():
  */
 export async function queryMerchants(
   category: PrimaryCategory
-): Promise<ISearchMerchantsResponse> {
+): Promise<IGetMerchantsResponse> {
   const client = getDocumentClient();
 
   // Use data access layer
-  const result = await searchMerchantsByCategory(client, category);
+  const result = await getMerchantsByCategory(client, category);
 
   return {
     merchants: result.merchants,
@@ -118,7 +115,7 @@ export async function queryMerchants(
  * @returns API Gateway response (200 OK)
  */
 export function prepareSuccessResponse(
-  data: ISearchMerchantsResponse
+  data: IGetMerchantsResponse
 ): TApiResponse {
   return apiSuccess(data, 200);
 }
@@ -140,7 +137,7 @@ export function prepareErrorResponse(
   console.error(
     JSON.stringify({
       level: "ERROR",
-      message: "Failed to search merchants",
+      message: "Failed to get merchants",
       error: {
         name: error instanceof Error ? error.name : "Unknown",
         message: error instanceof Error ? error.message : String(error),

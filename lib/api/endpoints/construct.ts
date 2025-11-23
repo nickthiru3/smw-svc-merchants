@@ -1,6 +1,4 @@
 import { Construct } from "constructs";
-import BindingsConstruct from "./bindings/construct";
-import UsersConstruct from "./users/construct";
 import MerchantsConstruct from "./merchants/construct";
 import AuthConstruct from "#lib/auth/construct";
 import DatabaseConstruct from "#lib/db/construct";
@@ -20,18 +18,8 @@ class EndpointsConstruct extends Construct {
 
     const { config, apiProps, auth, db } = props;
 
-    new BindingsConstruct(this, "BindingsConstruct", {
-      config,
-      apiProps,
-    });
-
-    new UsersConstruct(this, "UsersConstruct", {
-      apiProps,
-      auth,
-      db,
-    });
-
     new MerchantsConstruct(this, "MerchantsConstruct", {
+      config,
       apiProps,
       auth,
       db,
